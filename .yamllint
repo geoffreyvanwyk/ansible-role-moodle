@@ -1,0 +1,54 @@
+---
+# This file is part of Ansible role geoffreyvanwyk.php.
+#
+# Ansible role geoffreyvanwyk.php is free software: you can redistribute it
+# and/or modify it under the terms of the GNU General Public License as
+# published by the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# Ansible role geoffreyvanwyk.php is distributed in the hope that it will be
+# useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General
+# Public License for more details.
+#
+# You should have received a copy of the GNU General Public License along with
+# Ansible role geoffreyvanwyk.php. If not, see <https://www.gnu.org/licenses/>.
+
+##
+# Custom configuration for YAML lint.
+#
+# @copyright    2023 Geoffrey Bernardo van Wyk (https://geoffreyvanwyk.dev)
+# @see          Extending the default configuration {@link https://yamllint.readthedocs.io/en/stable/configuration.html#extending-the-default-configuration}
+##
+
+extends: default
+
+rules:
+  braces:
+    max-spaces-inside: 1
+    level: error
+  brackets:
+    max-spaces-inside: 1
+    level: error
+  colons:
+    max-spaces-after: -1
+    level: error
+  commas:
+    max-spaces-after: -1
+    level: error
+  comments: disable
+  comments-indentation: disable
+  document-start: disable
+  empty-lines:
+    max: 3
+    level: error
+  hyphens:
+    level: error
+  indentation: disable
+  key-duplicates: enable
+  line-length: disable
+  new-line-at-end-of-file: disable
+  new-lines:
+    type: unix
+  trailing-spaces: disable
+  truthy: disable
