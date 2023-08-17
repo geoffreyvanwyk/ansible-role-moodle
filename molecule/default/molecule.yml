@@ -26,10 +26,14 @@ dependency:
 driver:
   name: docker
 platforms:
-  - name: instance
-    image: "geerlingguy/docker-${MOLECULE_DISTRO:-ubuntu2004}-ansible:latest"
+  - name: ansible_role_moodle_molecule_${MOLECULE_DISTRO:-ubuntu2204}
+    image: "geoffreyvanwyk/docker-${MOLECULE_DISTRO:-ubuntu2204}-ansible:latest"
     pre_build_image: true
 provisioner:
   name: ansible
+  inventory:
+    host_vars:
+      ubuntu:
+        ansible_user: ubuntu
 verifier:
   name: ansible
