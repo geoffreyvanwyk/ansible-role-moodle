@@ -19,3 +19,26 @@
 #
 # @copyright  2023 Geoffrey Bernardo van Wyk (https://geoffreyvanwyk.dev)
 ##
+
+- name: Ensure Git source code management system is available
+  become: yes
+  ansible.builtin.apt:
+    package:
+      - git
+    state: present
+
+- name: Ensure existence and accessibility of deployment directory
+  become: yes
+  ansible.builtin.file:
+    path: "{{ moodle_deploy_destination }}"
+    state: directory
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: u=rwx,g=rx,o=rx
+
+- name: Deploy Moodle source code
+  ansible.builtin.git:
+    repo: "{{ moodle_deploy_repository }}"
+    version: "{{ moodle_deploy_version }}"
+    update: "{{ moodle_deploy_update }}"
+    dest: "{{ moodle_deploy_destination }}"

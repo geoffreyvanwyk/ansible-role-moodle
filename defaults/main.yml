@@ -20,3 +20,8 @@
 # @copyright  2023 Geoffrey Bernardo van Wyk (https://geoffreyvanwyk.dev)
 # @see        Understanding Variable Precedence {@link https://docs.ansible.com/ansible/latest/playbook_guide/playbooks_variables.html#understanding-variable-precedence}
 ##
+
+moodle_deploy_repository: https://github.com/moodle/moodle
+moodle_deploy_version: MOODLE_402_STABLE
+moodle_deploy_update: yes
+moodle_deploy_destination: /var/www/html
