@@ -51,4 +51,6 @@ rules:
   new-lines:
     type: unix
   trailing-spaces: disable
-  truthy: disable
+  truthy:
+    allowed-values: ["true", "false", "yes", "no"]
+    check-keys: true
