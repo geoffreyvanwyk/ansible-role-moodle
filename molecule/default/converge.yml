@@ -23,6 +23,15 @@
 - name: Converge
   hosts: all
   tasks:
+    - name: Update APT package cache
+      # Sometimes the package list on the server does not contain all the available
+      # packages. A fresh list has to be downloaded from the Ubuntu package
+      # repositories.
+      become: yes
+      ansible.builtin.apt:
+        update_cache: yes
+        cache_valid_time: "{{ 60 * 60 * 24 }}" # seconds => 24 hours
+
     - name: "Include geoffreyvanwyk.moodle"
       ansible.builtin.include_role:
         name: "geoffreyvanwyk.moodle"

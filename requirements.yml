@@ -15,13 +15,9 @@
 # Ansible role geoffreyvanwyk.moodle. If not, see <https://www.gnu.org/licenses/>.
 
 ##
-# Variables calculated by the role.
+# List of roles on which this role depends.
 #
 # @copyright  2023 Geoffrey Bernardo van Wyk (https://geoffreyvanwyk.dev)
-# @see        Understanding Variable Precedence {@link https://docs.ansible.com/ansible/latest/playbook_guide/playbooks_variables.html#understanding-variable-precedence}
 ##
 
-php_version: "{{
-      '8.1' if (moodle_deploy_version == 'MOODLE_402_STABLE') or (moodle_deploy_version == 'MOODLE_401_STABLE')
-  else '8.0' if (moodle_deploy_version == 'MOODLE_400_STABLE') or (moodle_deploy_version == 'MOODLE_311_STABLE')
-  else '7.4' }}"
+- name: geoffreyvanwyk.php
