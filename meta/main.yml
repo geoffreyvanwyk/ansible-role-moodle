@@ -137,7 +137,7 @@ dependencies:
       - name: max_input_vars
         value: 5000 # Default: 1000
       - name: file_uploads
-        value: On
+        value: "On"
       - name: opcache.enable
         value: 1
       # - name: memory_limit
