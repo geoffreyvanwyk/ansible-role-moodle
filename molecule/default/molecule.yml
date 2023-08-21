@@ -33,7 +33,7 @@ provisioner:
   name: ansible
   inventory:
     host_vars:
-      ubuntu:
+      ansible_role_moodle_molecule_${MOLECULE_DISTRO:-ubuntu2204}:
         ansible_user: ubuntu
 verifier:
   name: ansible
