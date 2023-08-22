@@ -1,0 +1,99 @@
+---
+# This file is part of Ansible role geoffreyvanwyk.moodle.
+#
+# Ansible role geoffreyvanwyk.moodle is free software: you can redistribute it
+# and/or modify it under the terms of the GNU General Public License as
+# published by the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# Ansible role geoffreyvanwyk.moodle is distributed in the hope that it will be
+# useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General
+# Public License for more details.
+#
+# You should have received a copy of the GNU General Public License along with
+# Ansible role geoffreyvanwyk.moodle. If not, see <https://www.gnu.org/licenses/>.
+
+##
+# Installs the specified database service and creates the required database with
+# associated user.
+#
+# @copyright  2023 Geoffrey Bernardo van Wyk (https://geoffreyvanwyk.dev)
+##
+
+- name: Database Service - PostgreSQL
+  when: moodle_db_type == 'pgsql'
+  vars:
+    moodle_postgresql_version: 14
+    moodle_postgresql_bin: /usr/lib/postgresql/{{ moodle_postgresql_version }}/bin
+    moodle_postgresql_lib: /var/lib/postgresql/{{ moodle_postgresql_version }}/main
+  block:
+    - name: Download signing key for PostgreSQL APT package repository
+      become: yes
+      ansible.builtin.uri:
+        url: https://www.postgresql.org/media/keys/ACCC4CF8.asc
+        status_code:
+          - 200
+          - 304
+        dest: /etc/apt/keyrings/postgresql.asc
+
+    - name: Add APT package repository for PostgreSQL
+      become: yes
+      ansible.builtin.apt_repository:
+        repo: deb [arch=amd64 signed-by=/etc/apt/keyrings/postgresql.asc] http://apt.postgresql.org/pub/repos/apt {{ ansible_distribution_release }}-pgdg main
+        state: present
+
+    - name: Install PostgreSQL
+      become: yes
+      ansible.builtin.apt:
+        package:
+          - postgresql-{{ moodle_postgresql_version }}
+          - postgresql-contrib-{{ moodle_postgresql_version }}
+          - libpq-dev        # Necessary for postgresql_* modules
+          - python3-psycopg2 # Necessary for postgresql_* modules
+          - acl              # Necessary for initializing PostgreSQL
+        state: present
+
+    - name: Status of PostgreSQL access configuration file
+      become: yes
+      ansible.builtin.stat:
+        path: "{{ moodle_postgresql_lib }}/pg_hba.conf"
+      register: moodle_postgresql_pg_hba_conf_file
+
+    - name: Ensure PostgreSQL data directory is empty if PostgreSQL has not been initialized
+      when: not moodle_postgresql_pg_hba_conf_file.stat.exists
+      become: yes
+      ansible.builtin.file:
+        path: "{{ moodle_postgresql_lib }}"
+        state: absent
+
+    - name: Initialize PostgreSQL
+      when: not moodle_postgresql_pg_hba_conf_file.stat.exists
+      become: yes
+      become_user: postgres
+      ansible.builtin.command:
+        cmd: "{{ moodle_postgresql_bin }}/initdb --pgdata={{ moodle_postgresql_lib }} --auth-host=md5 --auth-local=peer"
+        creates: "{{ moodle_postgresql_lib }}/pg_hba.conf"
+
+    - name: Start PostgreSQL service
+      become: yes
+      ansible.builtin.sysvinit:
+        name: postgresql
+        state: started
+        enabled: yes
+
+    - name: Create database user
+      become: yes
+      become_user: postgres
+      community.postgresql.postgresql_user:
+        name: "{{ moodle_db_user }}"
+        password: "{{ moodle_db_password }}"
+        state: present
+
+    - name: Create database
+      become: yes
+      become_user: postgres
+      community.postgresql.postgresql_db:
+        name: "{{ moodle_db_name }}"
+        state: present
+        owner: "{{ moodle_db_user }}"

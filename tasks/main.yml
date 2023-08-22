@@ -20,17 +20,20 @@
 # @copyright  2023 Geoffrey Bernardo van Wyk (https://geoffreyvanwyk.dev)
 ##
 
+- name: Install database service
+  when: moodle_db_install
+  ansible.builtin.import_tasks: ./database.yml
+
 - name: Ensure Git source code management system is available
   become: yes
   ansible.builtin.apt:
-    package:
-      - git
+    package: git
     state: present
 
-- name: Ensure existence and accessibility of deployment directory
+- name: Ensure existence and accessibility of parent of deployment directory
   become: yes
   ansible.builtin.file:
-    path: "{{ moodle_deploy_destination }}"
+    path: "{{ moodle_deploy_destination | dirname }}"
     state: directory
     owner: "{{ ansible_user }}"
     group: "{{ ansible_user }}"

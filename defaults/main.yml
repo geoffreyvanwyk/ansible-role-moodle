@@ -21,7 +21,27 @@
 # @see        Understanding Variable Precedence {@link https://docs.ansible.com/ansible/latest/playbook_guide/playbooks_variables.html#understanding-variable-precedence}
 ##
 
+# Deploy
 moodle_deploy_repository: https://github.com/moodle/moodle
 moodle_deploy_version: MOODLE_402_STABLE
-moodle_deploy_update: yes
-moodle_deploy_destination: /var/www/html
+moodle_deploy_update: yes                  # Whether to pull new commits.
+moodle_deploy_destination: /var/www/moodle # Also the web document root.
+
+# Database
+
+## Whether or not to install a database service.
+moodle_db_install: yes
+
+## Which database service to use: pgsql or maridb.
+moodle_db_type: pgsql
+
+## The name of the database.
+moodle_db_name: moodle
+
+## If database service has to be installed, this will be created with
+## administrative provileges on the database.
+moodle_db_user: moodler
+
+## Random string generated for database password.
+moodle_db_password: "{{
+    lookup('password', '/dev/null length=24 chars=ascii_letters') }}"
