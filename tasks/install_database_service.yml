@@ -90,6 +90,15 @@
       become_user: postgres
       community.postgresql.postgresql_user:
         name: "{{ moodle_db_user }}"
+        state: present
+      register: moodle_create_database_user
+
+    - name: Assign password to database user # noqa: no-handler
+      when: moodle_create_database_user.changed
+      become: yes
+      become_user: postgres
+      community.postgresql.postgresql_user:
+        name: "{{ moodle_db_user }}"
         password: "{{ moodle_db_password }}"
         state: present
 
