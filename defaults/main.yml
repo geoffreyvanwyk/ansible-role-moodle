@@ -45,3 +45,55 @@ moodle_db_user: moodler
 ## Random string generated for database password.
 moodle_db_password: "{{
     lookup('password', '/dev/null length=24 chars=ascii_letters') }}"
+
+# Web Hosting
+
+## Directories in the Moodle source code that must not be directly accessible
+## over the web and for which the web server must respond with Not Found.
+##
+## The list of directories to be protected can be found on an existing Moodle
+## instance (e.g. sandbox.moodledemo.net) by visiting:
+## "Site Administration > Reports > Security Checks > Check public/private paths".
+moodle_web_protected_directories:
+  - \.git
+  - \.github
+  - \.vscode
+  - behat
+  - lib/classes
+  - fixtures
+  - node_modules
+  - vendor
+
+## Files in the Moodle source code that must not be directly accessible
+## over the web and for which the web server must respond with Not Found.
+##
+## The list of files to be protected can be found on an existing Moodle
+## instance (e.g. sandbox.moodledemo.net) by visiting:
+## "Site Administration > Reports > Security Checks > Check public/private paths".
+moodle_web_protected_files:
+  - \.env
+  - \.stylelintrc
+  - behat\.yml\.dist
+  - behat\.yml
+  - composer\.json
+  - composer\.lock
+  - db/install\.xml
+  - environment\.xml
+  - package\.json
+  - package\.lock
+  - phpunit\.xml
+  - phpunit\.xml\.dist
+  - readme\.txt
+  - README\.txt
+  - README\.md
+  - upgrade\.txt
+
+## Whether to serve Moodle from a subdirectory or virtualhost.
+##
+## When served from a subdirectory, variable:
+##
+## - moodle_deploy_destination: must be the path to a subdirectory of the
+##                              document root of an existing virtual host.
+## - moodle_wwwroot:            must have as its path the same subdirectory as
+##                              moodle_deploy_destination.
+moodle_web_type: subdirectory
