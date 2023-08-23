@@ -15,14 +15,29 @@
 # Ansible role geoffreyvanwyk.moodle. If not, see <https://www.gnu.org/licenses/>.
 
 ##
-# Entry point for all tasks performed by the role.
+# Deploy the Moodle source code.
 #
 # @copyright  2023 Geoffrey Bernardo van Wyk (https://geoffreyvanwyk.dev)
 ##
 
-- name: Install database service
-  when: moodle_db_install
-  ansible.builtin.import_tasks: ./install_database_service.yml
+- name: Ensure Git source code management system is available
+  become: yes
+  ansible.builtin.apt:
+    package: git
+    state: present
 
-- name: Deploy Moodle
-  ansible.builtin.import_tasks: ./deploy_source_code.yml
+- name: Ensure existence and accessibility of parent of deployment directory
+  become: yes
+  ansible.builtin.file:
+    path: "{{ moodle_deploy_destination | dirname }}"
+    state: directory
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: u=rwx,g=rx,o=rx
+
+- name: Deploy Moodle source code
+  ansible.builtin.git:
+    repo: "{{ moodle_deploy_repository }}"
+    version: "{{ moodle_deploy_version }}"
+    update: "{{ moodle_deploy_update }}"
+    dest: "{{ moodle_deploy_destination }}"
