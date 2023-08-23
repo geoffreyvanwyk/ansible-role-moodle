@@ -15,7 +15,7 @@
 # Ansible role geoffreyvanwyk.moodle. If not, see <https://www.gnu.org/licenses/>.
 
 ##
-# Deploy the Moodle source code.
+# Deploy the Moodle source code from a remote source code repository host like GitHub.
 #
 # @copyright  2023 Geoffrey Bernardo van Wyk (https://geoffreyvanwyk.dev)
 ##

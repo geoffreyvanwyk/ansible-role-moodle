@@ -15,7 +15,7 @@
 # Ansible role geoffreyvanwyk.moodle. If not, see <https://www.gnu.org/licenses/>.
 
 ##
-# Installs the specified database service and creates the required database with
+# Install the specified database service and create the required database with
 # associated user.
 #
 # @copyright  2023 Geoffrey Bernardo van Wyk (https://geoffreyvanwyk.dev)
