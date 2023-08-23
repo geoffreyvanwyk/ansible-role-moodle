@@ -96,13 +96,14 @@ dependencies:
       # package is virtual, e.g. json. See
       # https://www.debian.org/doc/manuals/debian-faq/pkg-basics.en.html#virtual
       #
-      # - hash    https://www.php.net/manual/en/hash.requirements.php
-      # - json    https://www.php.net/manual/en/json.requirements.php
-      # - openssl https://www.php.net/manual/en/openssl.installation.php
-      # - pcre    https://www.php.net/manual/en/pcre.installation.php
-      # - sodium  https://www.php.net/manual/en/sodium.installation.php
-      # - spl     https://www.php.net/manual/en/spl.installation.php
-      # - zlib    https://www.php.net/manual/en/zlib.installation.php
+      # - hash      https://www.php.net/manual/en/hash.requirements.php
+      # - json      https://www.php.net/manual/en/json.requirements.php
+      # - openssl   https://www.php.net/manual/en/openssl.installation.php
+      # - pcre      https://www.php.net/manual/en/pcre.installation.php
+      # - sodium    https://www.php.net/manual/en/sodium.installation.php
+      # - simplexml https://www.php.net/manual/en/simplexml.installation.php
+      # - spl       https://www.php.net/manual/en/spl.installation.php
+      # - zlib      https://www.php.net/manual/en/zlib.installation.php
       - ctype
       - curl
       - dom
@@ -113,7 +114,6 @@ dependencies:
       - iconv
       - intl
       - mbstring
-      - simplexml
       - soap
       - tokenizer
       - xml
