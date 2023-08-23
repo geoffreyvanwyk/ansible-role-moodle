@@ -22,6 +22,7 @@
 ##
 
 - name: Database Service - PostgreSQL
+  # See https://www.postgresql.org/docs/14/app-initdb.html
   when: moodle_db_type == 'pgsql'
   vars:
     moodle_postgresql_version: 14
@@ -36,6 +37,7 @@
           - 200
           - 304
         dest: /etc/apt/keyrings/postgresql.asc
+        creates: /etc/apt/keyrings/postgresql.asc
 
     - name: Add APT package repository for PostgreSQL
       become: yes
@@ -52,6 +54,7 @@
           - libpq-dev        # Necessary for postgresql_* modules
           - python3-psycopg2 # Necessary for postgresql_* modules
           - acl              # Necessary for initializing PostgreSQL
+          - php{{ php_version }}-pgsql
         state: present
 
     - name: Status of PostgreSQL access configuration file
@@ -97,3 +100,66 @@
         name: "{{ moodle_db_name }}"
         state: present
         owner: "{{ moodle_db_user }}"
+
+- name: Database Service - MariaDB
+  # See https://mariadb.org/download/?t=repo-config&d=20.04+%22focal%22&v=10.6&r_m=liquidtelecom
+  when: moodle_db_type == 'mariadb'
+  vars:
+    moodle_mariadb_version: 10.6
+  block:
+    - name: Download signing key for MariaDB APT package repository
+      become: yes
+      ansible.builtin.uri:
+        url: https://mariadb.org/mariadb_release_signing_key.pgp
+        status_code:
+          - 200
+          - 304
+        dest: /etc/apt/keyrings/mariadb-keyring.pgp
+        creates: /etc/apt/keyrings/mariadb-keyring.pgp
+
+    - name: Add APT package repository for MariaDB
+      become: yes
+      ansible.builtin.apt_repository:
+        repo:  deb [signed-by=/etc/apt/keyrings/mariadb-keyring.pgp] https://mariadb.mirror.liquidtelecom.com/repo/{{ moodle_mariadb_version }}/ubuntu {{ ansible_distribution_release }} main
+        state: present
+
+    - name: Install MariaDB
+      become: yes
+      ansible.builtin.apt:
+        package:
+          - mariadb-server
+          - python3-pymysql # Needed for mysql_* modules
+          - php{{ php_version }}-mysql
+        state: present
+
+    - name: Start MariaDB service
+      become: yes
+      ansible.builtin.sysvinit:
+        name: mariadb
+        state: started
+        enabled: yes
+
+    - name: Create database
+      become: yes
+      community.mysql.mysql_db:
+        login_unix_socket: /run/mysqld/mysqld.sock
+        name: "{{ moodle_db_name }}"
+        state: present
+
+    - name: Create database user
+      become: yes
+      community.mysql.mysql_user:
+        login_unix_socket: /run/mysqld/mysqld.sock
+        name: "{{ moodle_db_user }}"
+        priv: "{{ moodle_db_name }}.*:ALL"
+        state: present
+      register: moodle_create_database_user
+
+    - name: Assign password to database user # noqa: no-handler
+      when: moodle_create_database_user.changed
+      become: yes
+      community.mysql.mysql_user:
+        login_unix_socket: /run/mysqld/mysqld.sock
+        name: "{{ moodle_db_user }}"
+        password: "{{ moodle_db_password }}"
+        state: present

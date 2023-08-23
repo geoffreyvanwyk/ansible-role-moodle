@@ -1,0 +1,39 @@
+---
+# This file is part of Ansible role geoffreyvanwyk.moodle.
+#
+# Ansible role geoffreyvanwyk.moodle is free software: you can redistribute it
+# and/or modify it under the terms of the GNU General Public License as
+# published by the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# Ansible role geoffreyvanwyk.moodle is distributed in the hope that it will be
+# useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General
+# Public License for more details.
+#
+# You should have received a copy of the GNU General Public License along with
+# Ansible role geoffreyvanwyk.moodle. If not, see <https://www.gnu.org/licenses/>.
+
+##
+# Contains the call to the role when testing with Molecule.
+#
+# @copyright  2023 Geoffrey Bernardo van Wyk (https://geoffreyvanwyk.dev)
+##
+
+- name: Converge
+  hosts: all
+  vars_files:
+    - ./vars/main.yml
+  tasks:
+    - name: Update APT package cache
+      # Sometimes the package list on the server does not contain all the available
+      # packages. A fresh list has to be downloaded from the Ubuntu package
+      # repositories.
+      become: yes
+      ansible.builtin.apt:
+        update_cache: yes
+        cache_valid_time: "{{ 60 * 60 * 24 }}" # seconds => 24 hours
+
+    - name: "Include geoffreyvanwyk.moodle"
+      ansible.builtin.include_role:
+        name: "geoffreyvanwyk.moodle"
