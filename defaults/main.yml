@@ -48,6 +48,19 @@ moodle_db_password: "{{
 
 # Web Hosting
 
+## Whether to serve Moodle with Apache (apache2) or Nginx (nginx).
+moodle_web_service: apache2
+
+## Whether to serve Moodle from a subdirectory or virtualhost.
+##
+## When served from a subdirectory, variable:
+##
+## - moodle_deploy_destination: must be the path to a subdirectory of the
+##                              document root of an existing virtual host.
+## - moodle_wwwroot:            must have as its path the same subdirectory as
+##                              moodle_deploy_destination.
+moodle_web_root: subdirectory
+
 ## Directories in the Moodle source code that must not be directly accessible
 ## over the web and for which the web server must respond with Not Found.
 ##
@@ -87,13 +100,3 @@ moodle_web_protected_files:
   - README\.txt
   - README\.md
   - upgrade\.txt
-
-## Whether to serve Moodle from a subdirectory or virtualhost.
-##
-## When served from a subdirectory, variable:
-##
-## - moodle_deploy_destination: must be the path to a subdirectory of the
-##                              document root of an existing virtual host.
-## - moodle_wwwroot:            must have as its path the same subdirectory as
-##                              moodle_deploy_destination.
-moodle_web_type: subdirectory
