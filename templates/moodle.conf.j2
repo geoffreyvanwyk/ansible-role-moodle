@@ -1,5 +1,7 @@
 {% for directory in moodle_web_protected_directories %}
 <Directory {{ moodle_deploy_destination }}/{{ directory }}>
+  Options -Indexes
+  RewriteEngine On
   RewriteRule ^.*$ [R=404]
 </Directory>
 {% endfor %}

@@ -1,0 +1,63 @@
+---
+# This file is part of Ansible role geoffreyvanwyk.moodle.
+#
+# Ansible role geoffreyvanwyk.moodle is free software: you can redistribute it
+# and/or modify it under the terms of the GNU General Public License as
+# published by the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# Ansible role geoffreyvanwyk.moodle is distributed in the hope that it will be
+# useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General
+# Public License for more details.
+#
+# You should have received a copy of the GNU General Public License along with
+# Ansible role geoffreyvanwyk.moodle. If not, see <https://www.gnu.org/licenses/>.
+
+##
+# Install Moodle from commandline.
+#
+# @copyright  2023 Geoffrey Bernardo van Wyk (https://geoffreyvanwyk.dev)
+##
+
+- name: Create Moodle data directory
+  become: yes
+  ansible.builtin.file:
+    path: "{{ moodle_dataroot }}"
+    state: directory
+    owner: "{{ ansible_user }}"
+    group: www-data
+    mode: u=rwx,g=rwx,o=
+
+- name: Install Moodle on commandline
+  vars:
+    command_args:
+      - php{{ php_version }}
+      - admin/cli/install.php
+      - --chmod=2770
+      - --lang={{ moodle_lang }}
+      - --wwwroot={{ moodle_wwwroot }}
+      - --dataroot={{ moodle_dataroot }}
+      - --dbtype={{ moodle_db_type }}
+      - --dbhost={{ moodle_db_host }}
+      - --dbname={{ moodle_db_name }}
+      - --dbuser={{ moodle_db_user }}
+      - --dbpass={{ moodle_db_password }}
+      - --dbport={{ moodle_db_port }}
+      - --prefix={{ moodle_db_prefix }}
+      - --fullname="{{ moodle_site_fullname }}"
+      - --shortname="{{ moodle_site_shortname }}"
+      - --summary="{{ moodle_site_summary }}"
+      - --adminuser={{ moodle_admin_user }}
+      - --adminpass="{{ moodle_admin_password }}"
+      - --adminemail={{ moodle_admin_email }}
+      - "{{ (moodle_sitepreset | length > 0) | ternary('--sitepreset=' + moodle_sitepreset, omit) }}"
+      - --supportemail={{ moodle_support_email }}
+      - "{{ (moodle_upgradekey | length > 0) | ternary('--upgradekey=' + moodle_upgradekey, omit) }}"
+      - --non-interactive
+      - --agree-license
+      - "{{ '--allow-unstable' if moodle_environment == 'development' else omit }}"
+  ansible.builtin.command:
+    chdir: "{{ moodle_deploy_destination }}"
+    argv: "{{ command_args | reject('equalto', omit) | list }}"
+    creates: "{{ moodle_deploy_destination }}/config.php"

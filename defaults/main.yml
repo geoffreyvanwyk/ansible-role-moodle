@@ -24,8 +24,8 @@
 # Deploy
 moodle_deploy_repository: https://github.com/moodle/moodle
 moodle_deploy_version: MOODLE_402_STABLE
-moodle_deploy_update: yes                  # Whether to pull new commits.
-moodle_deploy_destination: /var/www/moodle # Also the web document root.
+moodle_deploy_update: yes                       # Whether to pull new commits.
+moodle_deploy_destination: /var/www/html/moodle # Also the web document root.
 
 # Database
 
@@ -35,8 +35,17 @@ moodle_db_install: yes
 ## Which database service to use: pgsql or maridb.
 moodle_db_type: pgsql
 
+## The port on which the database service is listening.
+moodle_db_port: 5432
+
+## Server on which the database service is running: an IP address or domain name.
+moodle_db_host: 127.0.0.1
+
 ## The name of the database.
 moodle_db_name: moodle
+
+## Prefix for table names in the database.
+moodle_db_prefix: mdl_
 
 ## If database service has to be installed, this will be created with
 ## administrative provileges on the database.
@@ -44,7 +53,10 @@ moodle_db_user: moodler
 
 ## Random string generated for database password.
 moodle_db_password: "{{
-    lookup('password', '/dev/null length=24 chars=ascii_letters') }}"
+  lookup('ansible.builtin.password',
+         '/tmp/' + moodle_web_domain + '-' + moodle_web_path + '-db_password',
+         length=24,
+         chars=['ascii_letters', 'digits']) }}"
 
 # Web Hosting
 
@@ -57,8 +69,8 @@ moodle_web_service: apache2
 ##
 ## - moodle_deploy_destination: must be the path to a subdirectory of the
 ##                              document root of an existing virtual host.
-## - moodle_wwwroot:            must have as its path the same subdirectory as
-##                              moodle_deploy_destination.
+## - moodle_web_path:       must be subdirectory path relative to the
+##                              document root of the existing virtual host.
 moodle_web_root: subdirectory
 
 ## Directories in the Moodle source code that must not be directly accessible
@@ -100,3 +112,43 @@ moodle_web_protected_files:
   - README\.txt
   - README\.md
   - upgrade\.txt
+
+## Whether Moodle is served over 'https' or just 'http'.
+moodle_web_protocol: https
+
+## Domain name of the web service virtual host.
+moodle_web_domain: "{{ ansible_default_ipv4.address }}"
+
+## Subdirectory path relative to the document root of the web service virtual
+## host, without leading or trailing slashes.
+moodle_web_path: moodle
+
+# Install & Server-side Configuration
+
+## Whether the Moodle instance is installed for 'development', 'testing' or
+## 'production'. In a development environment certain things can be allowed,
+## e.g. enabled development mode, unstable plugins, etc.
+moodle_environment: production
+
+## See
+## https://github.com/moodle/moodle/blob/MOODLE_402_STABLE/admin/cli/install.php
+## and
+## https://github.com/moodle/moodle/blob/MOODLE_402_STABLE/confi-dist.php
+## for an explanation of the variables below.
+
+moodle_lang: en
+moodle_chmod: "2770"
+
+moodle_site_fullname: Modular Object-Orientated Dynamic Learning Environment
+moodle_site_shortname: Moodle
+moodle_site_summary: >
+  Moodle is the world’s most customisable and trusted eLearning solution that
+  empowers educators to improve our world.
+
+moodle_admin_user: moodler
+moodle_admin_password: N3verstople@rning
+moodle_admin_email: moodler@never.stops.learning
+moodle_support_email: "{{ moodle_admin_email }}"
+
+moodle_sitepreset: ''
+moodle_upgradekey: ''

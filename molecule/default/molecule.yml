@@ -29,6 +29,8 @@ platforms:
   - name: ansible_role_moodle_molecule_${MOLECULE_DISTRO:-ubuntu2204}
     image: "geoffreyvanwyk/docker-${MOLECULE_DISTRO:-ubuntu2204}-ansible:latest"
     pre_build_image: true
+    published_ports:
+      - "0.0.0.0:80:80"
 provisioner:
   name: ansible
   inventory:

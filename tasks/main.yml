@@ -29,3 +29,9 @@
 
 - name: Install and configure web hosting
   ansible.builtin.import_tasks: ./configure_web_hosting.yml
+
+- name: Install Moodle
+  ansible.builtin.import_tasks: ./install_moodle.yml
+
+# - name: Configure Moodle on server-side
+# - name: Upgrade Moodle
