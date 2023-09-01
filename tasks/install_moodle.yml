@@ -23,41 +23,47 @@
 - name: Create Moodle data directory
   become: yes
   ansible.builtin.file:
-    path: "{{ moodle_dataroot }}"
+    path: "{{ moodle_cfg_dataroot }}"
     state: directory
     owner: "{{ ansible_user }}"
     group: www-data
-    mode: u=rwx,g=rwx,o=
+    mode: "{{ moodle_cfg_directorypermissions }}"
 
-- name: Install Moodle on commandline
+- name: Create Moodle's configuration script
+  ansible.builtin.template:
+    src: moodle.config.php.j2
+    dest: "{{ moodle_deploy_destination }}/config.php"
+    mode: u=rw,g=r,o=r
+
+- name: Has Moodle been installed already?
+  block:
+    - name: Check Moodle database schema
+      ansible.builtin.command:
+        chdir: "{{ moodle_deploy_destination }}"
+        cmd: php{{ php_version }} admin/cli/check_database_schema.php
+      changed_when: no
+      ignore_errors: yes
+      register: moodle_check_database_schema
+
+    - name: Establish fact of whether Moodle is installed or not
+      ansible.builtin.set_fact:
+        moodle_is_installed: "{{ not moodle_check_database_schema.stdout is search('Database is not yet installed') }}"
+
+- name: Install Moodle database
+  when: not moodle_is_installed
   vars:
     command_args:
       - php{{ php_version }}
-      - admin/cli/install.php
-      - --chmod=2770
-      - --lang={{ moodle_lang }}
-      - --wwwroot={{ moodle_wwwroot }}
-      - --dataroot={{ moodle_dataroot }}
-      - --dbtype={{ moodle_db_type }}
-      - --dbhost={{ moodle_db_host }}
-      - --dbname={{ moodle_db_name }}
-      - --dbuser={{ moodle_db_user }}
-      - --dbpass={{ moodle_db_password }}
-      - --dbport={{ moodle_db_port }}
-      - --prefix={{ moodle_db_prefix }}
-      - --fullname="{{ moodle_site_fullname }}"
-      - --shortname="{{ moodle_site_shortname }}"
-      - --summary="{{ moodle_site_summary }}"
-      - --adminuser={{ moodle_admin_user }}
-      - --adminpass="{{ moodle_admin_password }}"
-      - --adminemail={{ moodle_admin_email }}
-      - "{{ (moodle_sitepreset | length > 0) | ternary('--sitepreset=' + moodle_sitepreset, omit) }}"
-      - --supportemail={{ moodle_support_email }}
-      - "{{ (moodle_upgradekey | length > 0) | ternary('--upgradekey=' + moodle_upgradekey, omit) }}"
-      - --non-interactive
+      - admin/cli/install_database.php
       - --agree-license
-      - "{{ '--allow-unstable' if moodle_environment == 'development' else omit }}"
+      - --fullname={{ moodle_site_fullname }}
+      - --shortname={{ moodle_site_shortname }}
+      - --summary="{{ moodle_site_summary }}"
+      - --adminuser={{ moodle_admin_username }}
+      - --adminpass={{ moodle_admin_password }}
+      - --adminemail={{ moodle_admin_email }}
+      - --supportemail={{ moodle_support_email }}
   ansible.builtin.command:
     chdir: "{{ moodle_deploy_destination }}"
     argv: "{{ command_args | reject('equalto', omit) | list }}"
-    creates: "{{ moodle_deploy_destination }}/config.php"
+  changed_when: yes

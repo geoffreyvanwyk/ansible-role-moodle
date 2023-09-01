@@ -20,3 +20,9 @@
 # @copyright  2023 Geoffrey Bernardo van Wyk (https://geoffreyvanwyk.dev)
 # @see        Handlers: running operations on change {@link https://docs.ansible.com/ansible/latest/playbook_guide/playbooks_handlers.html#handlers}
 ##
+
+- name: Restart Apache web service
+  become: yes
+  ansible.builtin.sysvinit:
+    name: apache2
+    state: restarted

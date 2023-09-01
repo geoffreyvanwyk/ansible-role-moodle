@@ -20,4 +20,4 @@
 # @copyright  2023 Geoffrey Bernardo van Wyk (https://geoffreyvanwyk.dev)
 ##
 
-moodle_db_type: mariadb
+moodle_cfg_dbtype: mariadb

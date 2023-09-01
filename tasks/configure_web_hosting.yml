@@ -25,19 +25,39 @@
   ansible.builtin.apt:
     package: "{{ moodle_web_service }}"
 
+- name: Temporarily delete included Apache conf for Moodle
+  become: yes
+  ansible.builtin.file:
+    path: /etc/apache2/conf-enabled/moodle_{{ moodle_instance }}.conf
+    state: absent
+
+- name: Enable Apache modules
+  when: moodle_web_service == 'apache2'
+  become: yes
+  loop:
+    - rewrite
+    - proxy
+    - proxy_fcgi
+  community.general.apache2_module:
+    name: "{{ item }}"
+    state: present
+  notify: Restart Apache web service
+
 - name: Serve Moodle from subdirectory
   when: moodle_web_root == 'subdirectory'
   become: yes
   block:
     - name: Make available Apache configuration for Moodle
       ansible.builtin.template:
-        src: moodle.conf.j2
-        dest: /etc/apache2/conf-available/moodle_{{ moodle_deploy_version }}.conf
+        src: moodle.apache.conf.j2
+        dest: /etc/apache2/conf-available/moodle_{{ moodle_instance }}.conf
         mode: u=rw,g=r,o=r
+      notify: Restart Apache web service
 
     - name: Enable Apache configuration for Moodle
       ansible.builtin.file:
-        path: /etc/apache2/conf-enabled/moodle_{{ moodle_deploy_version }}.conf
-        src: /etc/apache2/conf-available/moodle_{{ moodle_deploy_version }}.conf
+        path: /etc/apache2/conf-enabled/moodle_{{ moodle_instance }}.conf
+        src: /etc/apache2/conf-available/moodle_{{ moodle_instance }}.conf
         state: link
         mode: u=rw,g=r,o=r
+      notify: Restart Apache web service

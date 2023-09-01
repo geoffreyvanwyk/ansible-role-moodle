@@ -38,39 +38,39 @@ $CFG = new stdClass();
 // will be stored.  This database must already have been created         //
 // and a username/password created to access it.                         //
 
-$CFG->dbtype    = 'pgsql';      // 'pgsql', 'mariadb', 'mysqli', 'auroramysql', 'sqlsrv' or 'oci'
+$CFG->dbtype    = '{{ moodle_cfg_dbtype }}';      // 'pgsql', 'mariadb', 'mysqli', 'auroramysql', 'sqlsrv' or 'oci'
 $CFG->dblibrary = 'native';     // 'native' only at the moment
-$CFG->dbhost    = 'localhost';  // eg 'localhost' or 'db.isp.com' or IP
-$CFG->dbname    = 'moodle';     // database name, eg moodle
-$CFG->dbuser    = 'username';   // your database username
-$CFG->dbpass    = 'password';   // your database password
-$CFG->prefix    = 'mdl_';       // prefix to use for all table names
+$CFG->dbhost    = '{{ moodle_cfg_dbhost | default("127.0.0.1") }}';  // eg 'localhost' or 'db.isp.com' or IP
+$CFG->dbname    = '{{ moodle_cfg_dbname }}';     // database name, eg moodle
+$CFG->dbuser    = '{{ moodle_cfg_dbuser }}';   // your database username
+$CFG->dbpass    = '{{ moodle_cfg_dbpass }}';   // your database password
+$CFG->prefix    = '{{ moodle_cfg_prefix | default("mdl_") }}';       // prefix to use for all table names
 $CFG->dboptions = array(
-    'dbpersist' => false,       // should persistent database connections be
+    'dbpersist' => {{ moodle_cfg_dbpersist | default('false') }},       // should persistent database connections be
                                 //  used? set to 'false' for the most stable
                                 //  setting, 'true' can improve performance
                                 //  sometimes
-    'dbsocket'  => false,       // should connection via UNIX socket be used?
+    'dbsocket'  => {{ moodle_cfg_dbsocket | default('false') }},       // should connection via UNIX socket be used?
                                 //  if you set it to 'true' or custom path
                                 //  here set dbhost to 'localhost',
                                 //  (please note mysql is always using socket
                                 //  if dbhost is 'localhost' - if you need
                                 //  local port connection use '127.0.0.1')
-    'dbport'    => '',          // the TCP port number to use when connecting
+    'dbport'    => '{{ moodle_cfg_dbport | default('') }}',          // the TCP port number to use when connecting
                                 //  to the server. keep empty string for the
                                 //  default port
-    'dbhandlesoptions' => false,// On PostgreSQL poolers like pgbouncer don't
+    'dbhandlesoptions' => {{ moodle_cfg_dbhandlesoptions | default('false') }},// On PostgreSQL poolers like pgbouncer don't
                                 // support advanced options on connection.
                                 // If you set those in the database then
                                 // the advanced settings will not be sent.
-    'dbcollation' => 'utf8mb4_unicode_ci', // MySQL has partial and full UTF-8
+    'dbcollation' => '{{ moodle_cfg_dbcollation | default("utf8mb4_unicode_ci") }}', // MySQL has partial and full UTF-8
                                 // support. If you wish to use partial UTF-8
                                 // (three bytes) then set this option to
                                 // 'utf8_unicode_ci', otherwise this option
                                 // can be removed for MySQL (by default it will
                                 // use 'utf8mb4_unicode_ci'. This option should
                                 // be removed for all other databases.
-    // 'versionfromdb' => false,   // On MySQL and MariaDB, this can force
+    {{ ((moodle_cfg_dbtype == 'mariadb') or (moodle_cfg_dbtype == 'mysqli')) | ternary("'versionfromdb' => " + (moodle_cfg_versionfromdb | default('false')), "// 'versionfromdb' => false") }},   // On MySQL and MariaDB, this can force
                                 // the DB version to be evaluated using
                                 // the VERSION function instead of the version
                                 // provided by the PHP client which could be
@@ -78,11 +78,7 @@ $CFG->dboptions = array(
                                 // e.g. PaaS on Azure. Default is false/unset.
                                 // Uncomment and set to true to force MySQL and
                                 // MariaDB to use 'SELECT VERSION();'.
-    // 'extrainfo' => [],       // Extra information for the DB driver, e.g. SQL Server,
-                                // has additional configuration according to its environment,
-                                // which the administrator can specify to alter and
-                                // override any connection options.
-    // 'fetchbuffersize' => 100000, // On PostgreSQL, this option sets a limit
+    {{ (moodle_cfg_dbtype == 'pgsql') | ternary("'fetchbuffersize' => " + (moodle_cfg_fetchbuffersize | default("100000")), "// 'fetchbuffersize' => 100000") }}, // On PostgreSQL, this option sets a limit
                                 // on the number of rows that are fetched into
                                 // memory when doing a large recordset query
                                 // (e.g. search indexing). Default is 100000.
@@ -91,45 +87,6 @@ $CFG->dboptions = array(
                                 // set to zero if you are using pg_bouncer in
                                 // 'transaction' mode (it is fine in 'session'
                                 // mode).
-    /*
-    'connecttimeout' => null, // Set connect timeout in seconds. Not all drivers support it.
-    'readonly' => [          // Set to read-only slave details, to get safe reads
-                             // from there instead of the master node. Optional.
-                             // Currently supported by pgsql and mysqli variety classes.
-                             // If not supported silently ignored.
-      'instance' => [        // Readonly slave connection parameters
-        [
-          'dbhost' => 'slave.dbhost',
-          'dbport' => '',    // Defaults to master port
-          'dbuser' => '',    // Defaults to master user
-          'dbpass' => '',    // Defaults to master password
-        ],
-        [...],
-      ],
-
-    Instance(s) can alternatively be specified as:
-
-      'instance' => 'slave.dbhost',
-      'instance' => ['slave.dbhost1', 'slave.dbhost2'],
-      'instance' => ['dbhost' => 'slave.dbhost', 'dbport' => '', 'dbuser' => '', 'dbpass' => ''],
-
-      'connecttimeout' => 2, // Set read-only slave connect timeout in seconds. See above.
-      'latency' => 0.5,      // Set read-only slave sync latency in seconds.
-                             // When 'latency' seconds have lapsed after an update to a table
-                             // it is deemed safe to use readonly slave for reading from the table.
-                             // It is optional, defaults to 1 second. If you want once written to a table
-                             // to always use master handle for reading set it to something ridiculosly big,
-                             // eg 10.
-                             // Lower values increase the performance, but setting it too low means
-                             // missing the master-slave sync.
-      'exclude_tables' => [  // Tables to exclude from read-only slave feature.
-          'table1',          // Should not be used, unless in rare cases when some area of the system
-          'table2',          // is malfunctioning and you still want to use readonly feature.
-      ],                     // Then one can exclude offending tables while investigating.
-
-    More info available in lib/dml/moodle_read_slave_trait.php where the feature is implemented.
-    ]
-     */
 // For all database config settings see https://docs.moodle.org/en/Database_settings
 );
 
@@ -145,7 +102,7 @@ $CFG->dboptions = array(
 // If you need both intranet and Internet access please read
 // http://docs.moodle.org/en/masquerading
 
-$CFG->wwwroot   = 'http://example.com/moodle';
+$CFG->wwwroot   = '{{ moodle_cfg_wwwroot }}';
 
 
 //=========================================================================
@@ -161,7 +118,7 @@ $CFG->wwwroot   = 'http://example.com/moodle';
 //
 // - On Windows systems you might specify something like 'c:\moodledata'
 
-$CFG->dataroot  = '/home/example/moodledata';
+$CFG->dataroot  = '{{ moodle_cfg_dataroot }}';
 
 
 //=========================================================================
@@ -175,7 +132,7 @@ $CFG->dataroot  = '/home/example/moodledata';
 // to make sure the web server process (eg Apache) can access the files.
 // NOTE: the prefixed 0 is important, and don't use quotes.
 
-$CFG->directorypermissions = 02777;
+$CFG->directorypermissions = {{ moodle_cfg_directorypermissions }};
 
 
 //=========================================================================
@@ -192,7 +149,7 @@ $CFG->directorypermissions = 02777;
 // After any change you need to visit your new admin directory
 // and purge all caches.
 
-$CFG->admin = 'admin';
+$CFG->admin = '{{ moodle_cfg_admin | default("admin") }}';
 
 
 //=========================================================================
@@ -516,7 +473,7 @@ $CFG->admin = 'admin';
 // want to have initial error messages for eventual database connection problems
 // localized too, you have to set your language code here.
 //
-//     $CFG->lang = 'yourlangcode'; // for example 'cs'
+$CFG->lang = '{{ moodle_cfg_lang | default("en") }}'; // for example 'cs'
 //
 // When Moodle is about to perform an intensive operation it raises PHP's memory
 // limit. The following setting should be used on large sites to set the raised

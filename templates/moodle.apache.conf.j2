@@ -1,0 +1,21 @@
+{% for directory in moodle_web_protected_directories %}
+  <DirectoryMatch ^{{ moodle_deploy_destination | replace(".", "\.") }}(?:[^/]*/)*/?{{ directory }}$>
+    RewriteEngine On
+    RewriteRule ^.*$ [R=404]
+  </DirectoryMatch>
+{% endfor %}
+
+<Directory {{ moodle_deploy_destination }}>
+  Options -Indexes
+  RewriteEngine On
+
+{% for file in moodle_web_protected_files %}
+  <FilesMatch "{{ file }}$">
+    RewriteRule ^.*$ [R=404]
+  </FilesMatch>
+{% endfor %}
+
+  <FilesMatch \.php$>
+    SetHandler "proxy:unix:/run/php/php{{ php_version }}-fpm.sock|fcgi://localhost/"
+  </FilesMatch>
+</Directory>

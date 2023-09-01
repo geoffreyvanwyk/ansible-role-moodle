@@ -23,7 +23,7 @@
 
 - name: Database Service - PostgreSQL
   # See https://www.postgresql.org/docs/14/app-initdb.html
-  when: moodle_db_type == 'pgsql'
+  when: moodle_cfg_dbtype == 'pgsql'
   vars:
     moodle_postgresql_version: 14
     moodle_postgresql_bin: /usr/lib/postgresql/{{ moodle_postgresql_version }}/bin
@@ -89,21 +89,21 @@
       become: yes
       become_user: postgres
       community.postgresql.postgresql_user:
-        name: "{{ moodle_db_user }}"
-        password: "{{ moodle_db_password }}"
+        name: "{{ moodle_cfg_dbuser }}"
+        password: "{{ moodle_cfg_dbpass }}"
         state: present
 
     - name: Create database
       become: yes
       become_user: postgres
       community.postgresql.postgresql_db:
-        name: "{{ moodle_db_name }}"
+        name: "{{ moodle_cfg_dbname }}"
         state: present
-        owner: "{{ moodle_db_user }}"
+        owner: "{{ moodle_cfg_dbuser }}"
 
 - name: Database Service - MariaDB
   # See https://mariadb.org/download/?t=repo-config&d=20.04+%22focal%22&v=10.6&r_m=liquidtelecom
-  when: moodle_db_type == 'mariadb'
+  when: moodle_cfg_dbtype == 'mariadb'
   vars:
     moodle_mariadb_version: 10.6
   block:
@@ -143,14 +143,14 @@
       become: yes
       community.mysql.mysql_db:
         login_unix_socket: /run/mysqld/mysqld.sock
-        name: "{{ moodle_db_name }}"
+        name: "{{ moodle_cfg_dbname }}"
         state: present
 
     - name: Create database user
       become: yes
       community.mysql.mysql_user:
         login_unix_socket: /run/mysqld/mysqld.sock
-        name: "{{ moodle_db_user }}"
-        password: "{{ moodle_db_password }}"
-        priv: "{{ moodle_db_name }}.*:ALL"
+        name: "{{ moodle_cfg_dbuser }}"
+        password: "{{ moodle_cfg_dbpass }}"
+        priv: "{{ moodle_cfg_dbname }}.*:ALL"
         state: present
