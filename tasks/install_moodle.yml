@@ -77,6 +77,6 @@
 - name: Add cron job for Moodle
   ansible.builtin.cron:
     name: "{{ 'Moodle scheduled tasks for ' + moodle_instance }}"
-    job: php{{ php_version }} {{ moodle_deploy_destination }}/admin/cli/cron.php > /dev/null
+    job: php{{ php_version }} {{ moodle_deploy_destination }}/admin/cli/cron.php > /tmp/cron-{{ moodle_instance }}.log
     minute: "*"
   notify: Restart cron service
