@@ -41,3 +41,15 @@
     version: "{{ moodle_deploy_version }}"
     update: "{{ moodle_deploy_update }}"
     dest: "{{ moodle_deploy_destination }}"
+
+- name: Give write access to web server
+  # The web server user needs write access to allow site administrator's to
+  # install plugins.
+  ansible.posix.acl:
+    path: "{{ moodle_deploy_destination }}"
+    etype: user
+    entity: www-data
+    permissions: rwX
+    recursive: yes
+    default: yes
+    state: present
