@@ -26,3 +26,9 @@
   ansible.builtin.sysvinit:
     name: apache2
     state: restarted
+
+- name: Restart cron service
+  become: yes
+  ansible.builtin.sysvinit:
+    name: cron
+    state: restarted

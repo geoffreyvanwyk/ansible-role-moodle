@@ -67,3 +67,16 @@
     chdir: "{{ moodle_deploy_destination }}"
     argv: "{{ command_args | reject('equalto', omit) | list }}"
   changed_when: yes
+
+- name: Install cron service
+  become: yes
+  ansible.builtin.apt:
+    package: cron
+    state: present
+
+- name: Add cron job for Moodle
+  ansible.builtin.cron:
+    name: "{{ 'Moodle scheduled tasks for ' + moodle_instance }}"
+    job: php{{ php_version }} {{ moodle_deploy_destination }}/admin/cli/cron.php > /dev/null
+    minute: "*"
+  notify: Restart cron service
