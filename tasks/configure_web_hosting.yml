@@ -25,12 +25,6 @@
   ansible.builtin.apt:
     package: "{{ moodle_web_service }}"
 
-- name: Temporarily delete included Apache conf for Moodle
-  become: yes
-  ansible.builtin.file:
-    path: /etc/apache2/conf-enabled/moodle_{{ moodle_instance }}.conf
-    state: absent
-
 - name: Enable Apache modules
   when: moodle_web_service == 'apache2'
   become: yes
