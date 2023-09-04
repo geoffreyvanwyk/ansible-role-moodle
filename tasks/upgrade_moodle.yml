@@ -15,24 +15,31 @@
 # Ansible role geoffreyvanwyk.moodle. If not, see <https://www.gnu.org/licenses/>.
 
 ##
-# Entry point for all tasks performed by the role.
+# Upgrade Moodle from commandline.
 #
 # @copyright  2023 Geoffrey Bernardo van Wyk (https://geoffreyvanwyk.dev)
 ##
 
-- name: Install database service
-  when: moodle_db_install
-  ansible.builtin.import_tasks: ./install_database_service.yml
+- name: Enable Moodle's maintenance mode
+  ansible.builtin.command:
+    chdir: "{{ moodle_deploy_destination }}"
+    cmd: php{{ php_version }} admin/cli/maintenance.php --enable
+  changed_when: yes
 
-- name: Deploy Moodle
-  ansible.builtin.import_tasks: ./deploy_source_code.yml
+- name: Upgrade Moodle from commandline
+  ansible.builtin.command:
+    chdir: "{{ moodle_deploy_destination }}"
+    cmd: php{{ php_version }} admin/cli/upgrade.php --non-interactive
+  changed_when: yes
 
-- name: Install and configure web hosting
-  ansible.builtin.import_tasks: ./configure_web_hosting.yml
+- name: Purge Moodle's caches
+  ansible.builtin.command:
+    chdir: "{{ moodle_deploy_destination }}"
+    cmd: php{{ php_version }} admin/cli/purge_caches.php
+  changed_when: yes
 
-- name: Install and configure Moodle on server
-  ansible.builtin.import_tasks: ./install_moodle.yml
-
-- name: Upgrade Moodle # noqa no-handler
-  when: moodle_deploy_source_code.changed
-  ansible.builtin.import_tasks: ./upgrade_moodle.yml
+- name: Disable Moodle's maintenance mode
+  ansible.builtin.command:
+    chdir: "{{ moodle_deploy_destination }}"
+    cmd: php{{ php_version }} admin/cli/maintenance.php --disable
+  changed_when: yes

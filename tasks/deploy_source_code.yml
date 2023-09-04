@@ -26,7 +26,14 @@
     package: git
     state: present
 
-- name: Ensure existence and accessibility of parent of deployment directory
+- name: Obtain status of parent of deployment destination
+  become: yes
+  ansible.builtin.stat:
+    path: "{{ moodle_deploy_destination | dirname }}"
+  register: moodle_stat_deploy_destination_parent
+
+- name: Create parent of deployment destination
+  when: not moodle_stat_deploy_destination_parent.stat.exists
   become: yes
   ansible.builtin.file:
     path: "{{ moodle_deploy_destination | dirname }}"
@@ -35,16 +42,52 @@
     group: "{{ ansible_user }}"
     mode: u=rwx,g=rx,o=rx
 
+- name: Ensure Ansible user has write access to parent of deployment destination
+  # This ensures that the Ansible user can clone the repository into the
+  # deployment destination.
+  become: yes
+  ansible.posix.acl:
+    path: "{{ moodle_deploy_destination | dirname }}"
+    etype: user
+    entity: "{{ ansible_user }}"
+    permissions: rwX
+    state: present
+
+- name: Ensure Ansible user has write access to possible plugin directories
+  # This ensures that the Ansible user will have write access to the directories
+  # of plugins that might get installed later via the web interface.
+  become: yes
+  ansible.posix.acl:
+    path: "{{ moodle_deploy_destination | dirname }}"
+    etype: user
+    entity: "{{ ansible_user }}"
+    permissions: rwX
+    default: yes
+    recursive: yes
+    state: present
+
 - name: Deploy Moodle source code
   ansible.builtin.git:
     repo: "{{ moodle_deploy_repository }}"
     version: "{{ moodle_deploy_version }}"
-    update: "{{ moodle_deploy_update }}"
     dest: "{{ moodle_deploy_destination }}"
+    update: "{{ moodle_deploy_update }}"
+  register: moodle_deploy_source_code
 
-- name: Give write access to web server
+- name: Give write access to web server to deployment destination
   # The web server user needs write access to allow site administrator's to
   # install plugins.
+  ansible.posix.acl:
+    path: "{{ moodle_deploy_destination }}"
+    etype: user
+    entity: www-data
+    permissions: rwX
+    recursive: yes
+    state: present
+
+- name: Give write access to web server to new directories in deployment destination
+  # This is for write access to new directories from future updates to source
+  # code.
   ansible.posix.acl:
     path: "{{ moodle_deploy_destination }}"
     etype: user
