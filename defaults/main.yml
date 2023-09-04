@@ -89,6 +89,7 @@ moodle_web_protected_directories:
 ## "Site Administration > Reports > Security Checks > Check public/private paths".
 moodle_web_protected_files:
   - \.env
+  - \.lock
   - \.stylelintrc
   - behat\.yml\.dist
   - behat\.yml
@@ -101,6 +102,7 @@ moodle_web_protected_files:
   - phpunit\.xml
   - phpunit\.xml\.dist
   - readme\.txt
+  - readme_moodle\.txt
   - README\.txt
   - README\.md
   - upgrade\.txt

@@ -1,18 +1,18 @@
-{% for directory in moodle_web_protected_directories %}
-  <DirectoryMatch ^{{ moodle_deploy_destination | replace(".", "\.") }}(?:[^/]*/)*/?{{ directory }}$>
-    RewriteEngine On
-    RewriteRule ^.*$ [R=404]
-  </DirectoryMatch>
-{% endfor %}
-
 <Directory {{ moodle_deploy_destination }}>
   Options -Indexes
+
   RewriteEngine On
 
 {% for file in moodle_web_protected_files %}
-  <FilesMatch "{{ file }}$">
-    RewriteRule ^.*$ [R=404]
-  </FilesMatch>
+  RewriteCond %{REQUEST_URI} {{ file }}$
+  RewriteRule ^.*$ - [R=404]
+
+{% endfor %}
+
+{% for directory in moodle_web_protected_directories %}
+  RewriteCond %{REQUEST_URI} ^/{{ moodle_web_path | replace(".", "\.") }}(?:[^/]*/)*/?{{ directory }}
+  RewriteRule ^.*$ - [R=404]
+
 {% endfor %}
 
   <FilesMatch \.php$>
