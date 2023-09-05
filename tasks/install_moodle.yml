@@ -34,6 +34,9 @@
     src: moodle.config.php.j2
     dest: "{{ moodle_deploy_destination }}/config.php"
     mode: u=rw,g=r,o=r
+  tags:
+    - molecule-idempotence-notest # Task cannot be idempotent because of
+                                  # permissions set during deployment.
 
 - name: Has Moodle been installed already?
   block:

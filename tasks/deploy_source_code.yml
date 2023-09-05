@@ -78,6 +78,7 @@
 - name: Give write access to web server to deployment destination
   # The web server user needs write access to allow site administrator's to
   # install plugins.
+  become: yes
   ansible.posix.acl:
     path: "{{ moodle_deploy_destination }}"
     etype: user
@@ -85,10 +86,13 @@
     permissions: rwX
     recursive: yes
     state: present
+  tags:
+    - molecule-idempotence-notest # Because it is recursive, this task cannot be idempotent.
 
 - name: Give write access to web server to new directories in deployment destination
   # This is for write access to new directories from future updates to source
   # code.
+  become: yes
   ansible.posix.acl:
     path: "{{ moodle_deploy_destination }}"
     etype: user
