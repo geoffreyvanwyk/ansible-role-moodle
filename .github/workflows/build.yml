@@ -63,7 +63,9 @@ jobs:
       matrix:
         molecule-scenario:
           - default
+          - mariadb
         ubuntu-version:
+          - ubuntu2004
           - ubuntu2204
 
     steps:
