@@ -131,7 +131,7 @@ moodle_environment: production
 ## https://github.com/moodle/moodle/blob/MOODLE_402_STABLE/confi-dist.php
 ## for an explanation of the variables below.
 
-moodle_cfg_directorypermissions: "02770"
+moodle_cfg_directorypermissions: "02777"
 
 moodle_site_fullname: Modular Object-Orientated Dynamic Learning Environment
 moodle_site_shortname: Moodle

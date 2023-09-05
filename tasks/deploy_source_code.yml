@@ -53,7 +53,16 @@
     permissions: rwX
     state: present
 
-- name: Ensure Ansible user has write access to possible plugin directories
+- name: Deploy Moodle source code
+  ansible.builtin.git:
+    repo: "{{ moodle_deploy_repository }}"
+    version: "{{ moodle_deploy_version }}"
+    dest: "{{ moodle_deploy_destination }}"
+    umask: "0002"
+    update: "{{ moodle_deploy_update }}"
+  register: moodle_deploy_source_code
+
+- name: Ensure Ansible user has write access to additional plugin directories
   # This ensures that the Ansible user will have write access to the directories
   # of plugins that might get installed later via the web interface.
   become: yes
@@ -62,17 +71,9 @@
     etype: user
     entity: "{{ ansible_user }}"
     permissions: rwX
-    default: yes
+    default: yes # Means that it applies to new files and directories.
     recursive: yes
     state: present
-
-- name: Deploy Moodle source code
-  ansible.builtin.git:
-    repo: "{{ moodle_deploy_repository }}"
-    version: "{{ moodle_deploy_version }}"
-    dest: "{{ moodle_deploy_destination }}"
-    update: "{{ moodle_deploy_update }}"
-  register: moodle_deploy_source_code
 
 - name: Give write access to web server to deployment destination
   # The web server user needs write access to allow site administrator's to
@@ -94,5 +95,5 @@
     entity: www-data
     permissions: rwX
     recursive: yes
-    default: yes
+    default: yes # Means that it applies to new files and directories.
     state: present
