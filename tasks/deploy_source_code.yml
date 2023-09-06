@@ -20,10 +20,12 @@
 # @copyright  2023 Geoffrey Bernardo van Wyk (https://geoffreyvanwyk.dev)
 ##
 
-- name: Ensure Git source code management system is available
+- name: Ensure necessary packages are available
   become: yes
   ansible.builtin.apt:
-    package: git
+    package:
+      - git # Git source code management system
+      - acl # Access control lists
     state: present
 
 - name: Obtain status of parent of deployment destination

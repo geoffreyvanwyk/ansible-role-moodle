@@ -107,6 +107,16 @@
   vars:
     moodle_mariadb_version: 10.6
   block:
+    - name: Ensure APT keyrings directory exists
+      # The /etc/apt/keyrings directory does not exist on Ubuntu 20.04
+      become: yes
+      ansible.builtin.file:
+        path: /etc/apt/keyrings
+        state: directory
+        owner: root
+        group: root
+        mode: u=rwx,g=rx,o=rx
+
     - name: Download signing key for MariaDB APT package repository
       become: yes
       ansible.builtin.uri:
