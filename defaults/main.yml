@@ -22,10 +22,10 @@
 ##
 
 # Deployment of Source Code
-moodle_deploy_repository: https://github.com/moodle/moodle
-moodle_deploy_version: MOODLE_402_STABLE
-moodle_deploy_update: yes                       # Whether to pull new commits.
-moodle_deploy_destination: /var/www/html/moodle # Also the web document root.
+moodle_deploy_repository: https://github.com/moodle/moodle  # Public repository.
+moodle_deploy_version: MOODLE_402_STABLE                    # Branch, tag, or commit.
+moodle_deploy_update: yes                                   # Whether to pull new commits.
+moodle_deploy_destination: /var/www/html/moodle             # Also the web document root.
 
 # Set-Up of Database
 
