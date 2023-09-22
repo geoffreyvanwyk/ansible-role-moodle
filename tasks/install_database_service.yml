@@ -92,7 +92,7 @@
       become: yes
       ansible.builtin.sysvinit:
         name: postgresql
-        state: started
+        state: restarted
         enabled: yes
 
     - name: Create database user
