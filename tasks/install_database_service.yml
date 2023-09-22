@@ -94,6 +94,8 @@
         name: postgresql
         state: restarted
         enabled: yes
+      tags:
+        - molecule-idempotence-notest
 
     - name: Create database user
       become: yes
