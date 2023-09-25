@@ -45,7 +45,7 @@ moodle_cfg_dbuser: moodler
 ## Random string generated for database password.
 moodle_cfg_dbpass: "{{
   lookup('ansible.builtin.password',
-         '/tmp/' + moodle_web_domain + '-' + moodle_web_path + '-db_password',
+         '/tmp/' + moodle_cfg_dbuser + '-db_password',
          length=24,
          chars=['ascii_letters', 'digits']) }}"
 
