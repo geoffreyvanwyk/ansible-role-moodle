@@ -64,7 +64,6 @@
           - libpq-dev        # Necessary for postgresql_* modules
           - python3-psycopg2 # Necessary for postgresql_* modules
           - acl              # Necessary for initializing PostgreSQL
-          - php{{ php_version }}-pgsql
         state: present
 
     - name: Start PostgreSQL service
@@ -118,7 +117,6 @@
         package:
           - mariadb-server
           - python3-pymysql # Needed for mysql_* modules
-          - php{{ php_version }}-mysql
         state: present
 
     - name: Start MariaDB service

@@ -1,0 +1,95 @@
+---
+# This file is part of Ansible role geoffreyvanwyk.moodle.
+#
+# Ansible role geoffreyvanwyk.moodle is free software: you can redistribute it
+# and/or modify it under the terms of the GNU General Public License as
+# published by the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# Ansible role geoffreyvanwyk.moodle is distributed in the hope that it will be
+# useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General
+# Public License for more details.
+#
+# You should have received a copy of the GNU General Public License along with
+# Ansible role geoffreyvanwyk.moodle. If not, see <https://www.gnu.org/licenses/>.
+
+##
+# Install PHP programming language.
+#
+# @copyright  2023 Geoffrey Bernardo van Wyk (https://geoffreyvanwyk.dev)
+##
+
+- name: Install PHP
+  become: yes
+  ansible.builtin.include_role:
+    name: geoffreyvanwyk.php
+  vars:
+    # php_version
+    # The PHP version depends on the requested Moodle version. The php_version
+    # variable is calculated in vars/main.yml and not here because it is also
+    # needed in other parts of the role.
+    php_mod_enabled:
+      # The list of required and recommended PHP extensions (modules) for a
+      # particular Moodle version can be found on page
+      # Site Administration >  Server > Environment of any Moodle instance
+      # (See https://sandbox.moodledemo.net).
+      #
+      # The Moodle role installs both required and recommended extensions.
+      #
+      # The following extensions are part of PHP core or compiled into PHP (e.g.
+      # openssl); as such they are installed as part of the php Ubuntu package.
+      # When attempting to install them, the error
+      # "No package matching 'php{php_version}-{mod}' is available" is raised,
+      # or "'php{php_version}-{mod}' has no installation candidate" and that the
+      # package is virtual, e.g. json. See
+      # https://www.debian.org/doc/manuals/debian-faq/pkg-basics.en.html#virtual
+      #
+      # - hash      https://www.php.net/manual/en/hash.requirements.php
+      # - json      https://www.php.net/manual/en/json.requirements.php
+      # - openssl   https://www.php.net/manual/en/openssl.installation.php
+      # - pcre      https://www.php.net/manual/en/pcre.installation.php
+      # - sodium    https://www.php.net/manual/en/sodium.installation.php
+      # - simplexml https://www.php.net/manual/en/simplexml.installation.php
+      # - spl       https://www.php.net/manual/en/spl.installation.php
+      # - zlib      https://www.php.net/manual/en/zlib.installation.php
+      - ctype
+      - curl
+      - dom
+      - exif
+      - fileinfo
+      - fpm # The Moodle role uses PHP with the FastCGI PHP module.
+      - gd
+      - iconv
+      - intl
+      - mbstring
+      - mysql
+      - pgsql
+      - soap
+      - tokenizer
+      - xml
+      - xmlreader
+      - zip
+    php_ini_cli:
+      # The list of required and recommended PHP settings for a particular
+      # Moodle version can be found on page
+      # Site Administration >  Server > Environment of any Moodle instance
+      # (See https://sandbox.moodledemo.net).
+      #
+      # Additional settings can be found on the Release Notes page for a particular version.
+      # (See https://moodledev.io/general/releases)
+      - name: max_input_vars
+        value: 5000
+    php_ini_fpm:
+      # The list of required and recommended PHP settings for a particular
+      # Moodle version can be found on page
+      # Site Administration >  Server > Environment of any Moodle instance
+      # (See https://sandbox.moodledemo.net).
+      - name: max_input_vars
+        value: 5000 # Default: 1000
+      - name: file_uploads
+        value: "On"
+      - name: opcache.enable
+        value: 1
+      # - name: memory_limit
+      #   value: 96M # Default: 128M

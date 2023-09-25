@@ -20,6 +20,9 @@
 # @copyright  2023 Geoffrey Bernardo van Wyk (https://geoffreyvanwyk.dev)
 ##
 
+- name: Install PHP
+  ansible.builtin.import_tasks: ./install_php.yml
+
 - name: Install database service
   when: moodle_db_install
   ansible.builtin.import_tasks: ./install_database_service.yml
