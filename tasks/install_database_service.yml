@@ -67,35 +67,12 @@
           - php{{ php_version }}-pgsql
         state: present
 
-    - name: Status of PostgreSQL access configuration file
-      become: yes
-      ansible.builtin.stat:
-        path: "{{ moodle_postgresql_lib }}/pg_hba.conf"
-      register: moodle_postgresql_pg_hba_conf_file
-
-    - name: Ensure PostgreSQL data directory is empty if PostgreSQL has not been initialized
-      when: not moodle_postgresql_pg_hba_conf_file.stat.exists
-      become: yes
-      ansible.builtin.file:
-        path: "{{ moodle_postgresql_lib }}"
-        state: absent
-
-    - name: Initialize PostgreSQL
-      when: not moodle_postgresql_pg_hba_conf_file.stat.exists
-      become: yes
-      become_user: postgres
-      ansible.builtin.command:
-        cmd: "{{ moodle_postgresql_bin }}/initdb --pgdata={{ moodle_postgresql_lib }} --auth-host=md5 --auth-local=peer"
-        creates: "{{ moodle_postgresql_lib }}/pg_hba.conf"
-
     - name: Start PostgreSQL service
       become: yes
       ansible.builtin.sysvinit:
         name: postgresql
-        state: restarted
+        state: started
         enabled: yes
-      tags:
-        - molecule-idempotence-notest
 
     - name: Create database user
       become: yes
