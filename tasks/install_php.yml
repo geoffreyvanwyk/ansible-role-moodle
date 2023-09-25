@@ -94,3 +94,5 @@
         value: 1
       # - name: memory_limit
       #   value: 96M # Default: 128M
+  tags:
+    - molecule-idempotence-notest # PHP module mysql cannot be idempotently enabled.
