@@ -21,7 +21,6 @@
 ##
 
 - name: Install PHP
-  become: yes
   ansible.builtin.include_role:
     name: geoffreyvanwyk.php
   vars:
