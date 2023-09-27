@@ -65,7 +65,7 @@
       - --adminuser={{ moodle_admin_username }}
       - --adminpass={{ moodle_admin_password }}
       - --adminemail={{ moodle_admin_email }}
-      - --supportemail={{ moodle_support_email }}
+      - "{{ (moodle_deploy_version == 'MOODLE_311_STABLE' or moodle_deploy_version == 'MOODLE_400_STABLE') | ternary(omit, '--supportemail=' + moodle_support_email) }}"
   ansible.builtin.command:
     chdir: "{{ moodle_deploy_destination }}"
     argv: "{{ command_args | reject('equalto', omit) | list }}"
