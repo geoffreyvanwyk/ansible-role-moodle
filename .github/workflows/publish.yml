@@ -60,5 +60,5 @@ jobs:
         run: >-
           touch ansible.cfg
           &&
-          ansible-galaxy role import --api-key ${{ secrets.GALAXY_API_KEY }} --role-name moodle
+          ansible-galaxy role import -vvv --api-key ${{ secrets.GALAXY_API_KEY }} --role-name moodle
           geoffreyvanwyk https://github.com/geoffreyvanwyk/ansible-role-moodle
