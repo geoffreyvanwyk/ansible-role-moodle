@@ -21,11 +21,6 @@
 # @see        Understanding Variable Precedence {@link https://docs.ansible.com/ansible/latest/playbook_guide/playbooks_variables.html#understanding-variable-precedence}
 ##
 
-php_version: "{{
-       '8.1' if (moodle_deploy_version == 'MOODLE_402_STABLE') or (moodle_deploy_version == 'MOODLE_401_STABLE')
-  else '8.0' if (moodle_deploy_version == 'MOODLE_400_STABLE') or (moodle_deploy_version == 'MOODLE_311_STABLE')
-  else '7.4' }}"
-
 moodle_instance: "{{ moodle_web_domain + ('' if moodle_web_path == '' else '-' + moodle_web_path) }}"
 
 moodle_cfg_wwwroot: "{{ moodle_web_protocol }}://{{ moodle_web_domain }}/{{ moodle_web_path }}"
