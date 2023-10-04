@@ -20,6 +20,13 @@
 # @copyright  2023 Geoffrey Bernardo van Wyk (https://geoffreyvanwyk.dev)
 ##
 
+- name: Set PHP version
+  ansible.builtin.set_fact:
+    php_version: "{{
+           '8.1' if (moodle_deploy_version == 'MOODLE_402_STABLE') or (moodle_deploy_version == 'MOODLE_401_STABLE')
+      else '8.0' if (moodle_deploy_version == 'MOODLE_400_STABLE') or (moodle_deploy_version == 'MOODLE_311_STABLE')
+      else '7.4' }}"
+
 - name: Install PHP
   ansible.builtin.include_role:
     name: geoffreyvanwyk.php
