@@ -220,15 +220,15 @@ $CFG->admin = '{{ moodle_cfg_admin | default("admin") }}';
 //
 // Following settings may be used to select session driver, uncomment only one of the handlers.
 //   Database session handler (not compatible with MyISAM):
-{{ (moodle_cfg_session_handler_class is not defined) | ternary('//', '  ') }}      $CFG->session_handler_class = {{ moodle_cfg_session_handler_class | default("'\core\session\database'") }};
+{{ (moodle_cfg_session_handler_class is not defined) | ternary('//', '  ') }}      $CFG->session_handler_class = {{ moodle_cfg_session_handler_class | default("'\\core\\session\\database'") }};
 {{ (moodle_cfg_session_database_acquire_lock_timeout is not defined) | ternary('//', '  ') }}      $CFG->session_database_acquire_lock_timeout = {{ moodle_cfg_session_database_acquire_lock_timeout | default(120) }};
 //
 //   File session handler (file system locking required):
-{{ (moodle_cfg_session_handler_class is not defined) | ternary('//', '  ') }}      $CFG->session_handler_class = {{ moodle_cfg_session_handler_class | default("'\core\session\file'") }};
+{{ (moodle_cfg_session_handler_class is not defined) | ternary('//', '  ') }}      $CFG->session_handler_class = {{ moodle_cfg_session_handler_class | default("'\\core\\session\\file'") }};
 {{ (moodle_cfg_session_file_save_path is not defined) | ternary('//', '  ') }}      $CFG->session_file_save_path = {{ moodle_cfg_session_file_save_path | default("$CFG->dataroot.'/sessions'") }};
 //
 //   Memcached session handler (requires memcached server and extension):
-{{ (moodle_cfg_session_handler_class is not defined) | ternary('//', '  ') }}      $CFG->session_handler_class = {{ moodle_cfg_session_handler_class | default("'\core\session\memcached'") }};
+{{ (moodle_cfg_session_handler_class is not defined) | ternary('//', '  ') }}      $CFG->session_handler_class = {{ moodle_cfg_session_handler_class | default("'\\core\\session\\memcached'") }};
 {{ (moodle_cfg_session_memcached_save_path is not defined) | ternary('//', '  ') }}      $CFG->session_memcached_save_path = {{ moodle_cfg_session_memcached_save_path | default("'127.0.0.1:11211'") }};
 {{ (moodle_cfg_session_memcached_prefix is not defined) | ternary('//', '  ') }}      $CFG->session_memcached_prefix = {{ moodle_cfg_session_memcached_prefix | default("'memc.sess.key.'") }};
 {{ (moodle_cfg_session_memcached_acquire_lock_timeout is not defined) | ternary('//', '  ') }}      $CFG->session_memcached_acquire_lock_timeout = {{ moodle_cfg_session_memcached_acquire_lock_timeout | default(120) }};
@@ -237,7 +237,7 @@ $CFG->admin = '{{ moodle_cfg_admin | default("admin") }}';
 //                                                        // for tuning php-memcached 3.0.x (PHP 7)
 //
 //   Redis session handler (requires redis server and redis extension):
-{{ (moodle_cfg_session_handler_class is not defined) | ternary('//', '  ') }}      $CFG->session_handler_class = {{ moodle_cfg_session_handler_class | default('"\core\session\redis"') }};
+{{ (moodle_cfg_session_handler_class is not defined) | ternary('//', '  ') }}      $CFG->session_handler_class = {{ moodle_cfg_session_handler_class | default('"\\core\\session\\redis"') }};
 {{ (moodle_cfg_session_redis_host is not defined) | ternary('//', '  ') }}      $CFG->session_redis_host = {{ moodle_cfg_session_redis_host | default("'127.0.0.1'") }};
 {{ (moodle_cfg_session_redis_port is not defined) | ternary('//', '  ') }}      $CFG->session_redis_port = {{ moodle_cfg_session_redis_port | default(6379) }};                     // Optional.
 {{ (moodle_cfg_session_redis_database is not defined) | ternary('//', '  ') }}      $CFG->session_redis_database = {{ moodle_cfg_session_redis_database | default(0) }};                    // Optional, default is db 0.
