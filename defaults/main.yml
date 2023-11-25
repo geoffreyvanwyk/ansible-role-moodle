@@ -143,3 +143,10 @@ moodle_admin_username: moodler
 moodle_admin_password: N3verstople@rning
 moodle_admin_email: moodler@never.stops.learning
 moodle_support_email: "{{ moodle_admin_email }}"
+
+## A dictionary of forced settings, e.g.
+## moodle_cfg_forcedsettings:
+##   additionalhtmlfooter: '<style>p {color: red}</style>'
+##   enabledashboard: 0
+##   navcourselimit: 12
+moodle_cfg_forcedsettings: {}

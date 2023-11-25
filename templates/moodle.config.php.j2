@@ -762,6 +762,9 @@ $CFG->lang = '{{ moodle_cfg_lang | default("en") }}'; // for example 'cs'
 // Example:
 //   $CFG->somecoresetting = 'value';
 //
+{% for forcedsetting, forcedvalue in moodle_cfg_forcedsettings.items() %}
+$CFG->{{ forcedsetting }} = '{{ forcedvalue }}';
+{% endfor %}
 // Plugin settings have to be put into a special array.
 // Example:
 //   $CFG->forced_plugin_settings = array('pluginname'  => array('settingname' => 'value', 'secondsetting' => 'othervalue'),
