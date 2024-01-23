@@ -12,7 +12,8 @@
 # Public License for more details.
 #
 # You should have received a copy of the GNU General Public License along with
-# Ansible role geoffreyvanwyk.moodle. If not, see <https://www.gnu.org/licenses/>.
+# Ansible role geoffreyvanwyk.moodle. If not, see
+# <https://www.gnu.org/licenses/>.
 
 ##
 # Contains the call to the role when testing with Molecule.
@@ -28,12 +29,12 @@
 
   tasks:
     - name: Update APT package cache
-      # Sometimes the package list on the server does not contain all the available
-      # packages. A fresh list has to be downloaded from the Ubuntu package
-      # repositories.
-      become: yes
+      # Sometimes the package list on the server does not contain all the
+      # available packages. A fresh list has to be downloaded from the Ubuntu
+      # package repositories.
+      become: true
       ansible.builtin.apt:
-        update_cache: yes
+        update_cache: true
         cache_valid_time: "{{ 60 * 60 * 24 }}" # seconds => 24 hours
 
     - name: "Include geoffreyvanwyk.moodle"

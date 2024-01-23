@@ -36,7 +36,7 @@
   ansible.builtin.include_role:
     name: geoffreyvanwyk.php
     apply:
-      become: yes
+      become: true
   vars:
     # php_version
     # The PHP version depends on the requested Moodle version. The php_version

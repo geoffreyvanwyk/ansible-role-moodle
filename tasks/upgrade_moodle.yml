@@ -12,7 +12,8 @@
 # Public License for more details.
 #
 # You should have received a copy of the GNU General Public License along with
-# Ansible role geoffreyvanwyk.moodle. If not, see <https://www.gnu.org/licenses/>.
+# Ansible role geoffreyvanwyk.moodle. If not, see
+# <https://www.gnu.org/licenses/>.
 
 ##
 # Upgrade Moodle from commandline.
@@ -24,22 +25,22 @@
   ansible.builtin.command:
     chdir: "{{ moodle_deploy_destination }}"
     cmd: php{{ php_version }} admin/cli/maintenance.php --enable
-  changed_when: yes
+  changed_when: true
 
 - name: Upgrade Moodle from commandline
   ansible.builtin.command:
     chdir: "{{ moodle_deploy_destination }}"
     cmd: php{{ php_version }} admin/cli/upgrade.php --non-interactive
-  changed_when: yes
+  changed_when: true
 
 - name: Purge Moodle's caches
   ansible.builtin.command:
     chdir: "{{ moodle_deploy_destination }}"
     cmd: php{{ php_version }} admin/cli/purge_caches.php
-  changed_when: yes
+  changed_when: true
 
 - name: Disable Moodle's maintenance mode
   ansible.builtin.command:
     chdir: "{{ moodle_deploy_destination }}"
     cmd: php{{ php_version }} admin/cli/maintenance.php --disable
-  changed_when: yes
+  changed_when: true

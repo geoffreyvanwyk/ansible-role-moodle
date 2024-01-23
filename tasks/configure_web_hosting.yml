@@ -12,7 +12,8 @@
 # Public License for more details.
 #
 # You should have received a copy of the GNU General Public License along with
-# Ansible role geoffreyvanwyk.moodle. If not, see <https://www.gnu.org/licenses/>.
+# Ansible role geoffreyvanwyk.moodle. If not, see
+# <https://www.gnu.org/licenses/>.
 
 ##
 # Install a web service and configure it.
@@ -21,13 +22,13 @@
 ##
 
 - name: Install web service
-  become: yes
+  become: true
   ansible.builtin.apt:
     package: "{{ moodle_web_service }}"
 
 - name: Enable Apache modules
   when: moodle_web_service == 'apache2'
-  become: yes
+  become: true
   loop:
     - rewrite
     - proxy
@@ -39,7 +40,7 @@
 
 - name: Serve Moodle from subdirectory
   when: moodle_web_root == 'subdirectory'
-  become: yes
+  become: true
   block:
     - name: Make available Apache configuration for Moodle
       ansible.builtin.template:

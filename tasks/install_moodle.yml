@@ -12,7 +12,8 @@
 # Public License for more details.
 #
 # You should have received a copy of the GNU General Public License along with
-# Ansible role geoffreyvanwyk.moodle. If not, see <https://www.gnu.org/licenses/>.
+# Ansible role geoffreyvanwyk.moodle. If not, see
+# <https://www.gnu.org/licenses/>.
 
 ##
 # Install Moodle from commandline.
@@ -21,7 +22,7 @@
 ##
 
 - name: Create Moodle data directory
-  become: yes
+  become: true
   ansible.builtin.file:
     path: "{{ moodle_cfg_dataroot }}"
     state: directory
@@ -35,8 +36,8 @@
     dest: "{{ moodle_deploy_destination }}/config.php"
     mode: u=rw,g=r,o=r
   tags:
-    - molecule-idempotence-notest # Task cannot be idempotent because of
-                                  # permissions set during deployment.
+    # Task cannot be idempotent because of permissions set during deployment.
+    - molecule-idempotence-notest
 
 - name: Has Moodle been installed already?
   block:
@@ -44,13 +45,17 @@
       ansible.builtin.command:
         chdir: "{{ moodle_deploy_destination }}"
         cmd: php{{ php_version }} admin/cli/check_database_schema.php
-      changed_when: no
-      ignore_errors: yes
+      changed_when: false
+      ignore_errors: true
       register: moodle_check_database_schema
 
     - name: Establish fact of whether Moodle is installed or not
       ansible.builtin.set_fact:
-        moodle_is_installed: "{{ not moodle_check_database_schema.stdout is search('Database is not yet installed') }}"
+        moodle_is_installed: "{{
+          not moodle_check_database_schema.stdout
+          is
+          search('Database is not yet installed')
+          }}"
 
 - name: Install Moodle database
   when: not moodle_is_installed
@@ -65,14 +70,19 @@
       - --adminuser={{ moodle_admin_username }}
       - --adminpass={{ moodle_admin_password }}
       - --adminemail={{ moodle_admin_email }}
-      - "{{ (moodle_deploy_version == 'MOODLE_311_STABLE' or moodle_deploy_version == 'MOODLE_400_STABLE') | ternary(omit, '--supportemail=' + moodle_support_email) }}"
+      - "{{
+        ((moodle_deploy_version == 'MOODLE_311_STABLE')
+        or
+        (moodle_deploy_version == 'MOODLE_400_STABLE'))
+        | ternary(omit, '--supportemail=' + moodle_support_email)
+        }}"
   ansible.builtin.command:
     chdir: "{{ moodle_deploy_destination }}"
     argv: "{{ command_args | reject('equalto', omit) | list }}"
-  changed_when: yes
+  changed_when: true
 
 - name: Install cron service
-  become: yes
+  become: true
   ansible.builtin.apt:
     package: cron
     state: present
@@ -80,6 +90,10 @@
 - name: Add cron job for Moodle
   ansible.builtin.cron:
     name: "{{ 'Moodle scheduled tasks for ' + moodle_instance }}"
-    job: php{{ php_version }} {{ moodle_deploy_destination }}/admin/cli/cron.php > /tmp/cron-{{ moodle_instance }}.log
+    job: >-
+      php{{ php_version }}
+      {{ moodle_deploy_destination }}/admin/cli/cron.php
+      >
+      /tmp/cron-{{ moodle_instance }}.log
     minute: "*"
   notify: Restart cron service

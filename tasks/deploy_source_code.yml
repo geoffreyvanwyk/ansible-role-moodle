@@ -12,16 +12,18 @@
 # Public License for more details.
 #
 # You should have received a copy of the GNU General Public License along with
-# Ansible role geoffreyvanwyk.moodle. If not, see <https://www.gnu.org/licenses/>.
+# Ansible role geoffreyvanwyk.moodle. If not, see
+# <https://www.gnu.org/licenses/>.
 
 ##
-# Deploy the Moodle source code from a remote source code repository host like GitHub.
+# Deploy the Moodle source code from a remote source code repository host like
+# GitHub.
 #
 # @copyright  2023 Geoffrey Bernardo van Wyk (https://geoffreyvanwyk.dev)
 ##
 
 - name: Ensure necessary packages are available
-  become: yes
+  become: true
   ansible.builtin.apt:
     package:
       - git # Git source code management system
@@ -29,14 +31,14 @@
     state: present
 
 - name: Obtain status of parent of deployment destination
-  become: yes
+  become: true
   ansible.builtin.stat:
     path: "{{ moodle_deploy_destination | dirname }}"
   register: moodle_stat_deploy_destination_parent
 
 - name: Create parent of deployment destination
   when: not moodle_stat_deploy_destination_parent.stat.exists
-  become: yes
+  become: true
   ansible.builtin.file:
     path: "{{ moodle_deploy_destination | dirname }}"
     state: directory
@@ -47,7 +49,7 @@
 - name: Ensure Ansible user has write access to parent of deployment destination
   # This ensures that the Ansible user can clone the repository into the
   # deployment destination.
-  become: yes
+  become: true
   ansible.posix.acl:
     path: "{{ moodle_deploy_destination | dirname }}"
     etype: user
@@ -67,39 +69,40 @@
 - name: Ensure Ansible user has write access to additional plugin directories
   # This ensures that the Ansible user will have write access to the directories
   # of plugins that might get installed later via the web interface.
-  become: yes
+  become: true
   ansible.posix.acl:
     path: "{{ moodle_deploy_destination | dirname }}"
     etype: user
     entity: "{{ ansible_user }}"
     permissions: rwX
-    default: yes # Means that it applies to new files and directories.
-    recursive: yes
+    default: true # Means that it applies to new files and directories.
+    recursive: true
     state: present
 
 - name: Give write access to web server to deployment destination
   # The web server user needs write access to allow site administrator's to
   # install plugins.
-  become: yes
+  become: true
   ansible.posix.acl:
     path: "{{ moodle_deploy_destination }}"
     etype: user
     entity: www-data
     permissions: rwX
-    recursive: yes
+    recursive: true
     state: present
   tags:
-    - molecule-idempotence-notest # Because it is recursive, this task cannot be idempotent.
+    # Because it is recursive, this task cannot be idempotent.
+    - molecule-idempotence-notest
 
-- name: Give write access to web server to new directories in deployment destination
+- name: Give write access to web server to new directories in deploy destination
   # This is for write access to new directories from future updates to source
   # code.
-  become: yes
+  become: true
   ansible.posix.acl:
     path: "{{ moodle_deploy_destination }}"
     etype: user
     entity: www-data
     permissions: rwX
-    recursive: yes
-    default: yes # Means that it applies to new files and directories.
+    recursive: true
+    default: true # Means that it applies to new files and directories.
     state: present
