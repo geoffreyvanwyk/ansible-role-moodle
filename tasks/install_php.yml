@@ -12,7 +12,8 @@
 # Public License for more details.
 #
 # You should have received a copy of the GNU General Public License along with
-# Ansible role geoffreyvanwyk.moodle. If not, see <https://www.gnu.org/licenses/>.
+# Ansible role geoffreyvanwyk.moodle. If not, see
+# <https://www.gnu.org/licenses/>.
 
 ##
 # Install PHP programming language.
@@ -23,8 +24,12 @@
 - name: Set PHP version
   ansible.builtin.set_fact:
     php_version: "{{
-           '8.1' if (moodle_deploy_version == 'MOODLE_402_STABLE') or (moodle_deploy_version == 'MOODLE_401_STABLE')
-      else '8.0' if (moodle_deploy_version == 'MOODLE_400_STABLE') or (moodle_deploy_version == 'MOODLE_311_STABLE')
+      '8.2'
+      if (moodle_deploy_version in ['MOODLE_403_STABLE', 'MOODLE_402_STABLE'])
+      else '8.1'
+      if (moodle_deploy_version in ['MOODLE_401_STABLE'])
+      else '8.0'
+      if (moodle_deploy_version in ['MOODLE_400_STABLE', 'MOODLE_311_STABLE'])
       else '7.4' }}"
 
 - name: Install PHP
@@ -84,8 +89,8 @@
       # Site Administration >  Server > Environment of any Moodle instance
       # (See https://sandbox.moodledemo.net).
       #
-      # Additional settings can be found on the Release Notes page for a particular version.
-      # (See https://moodledev.io/general/releases)
+      # Additional settings can be found on the Release Notes page for a
+      # particular version. (See https://moodledev.io/general/releases)
       - name: max_input_vars
         value: 5000
     php_ini_fpm:
@@ -93,13 +98,14 @@
       # Moodle version can be found on page
       # Site Administration >  Server > Environment of any Moodle instance
       # (See https://sandbox.moodledemo.net).
+      #
+      # - name: memory_limit
+      #   value: 96M # Default: 128M
       - name: max_input_vars
         value: 5000 # Default: 1000
       - name: file_uploads
         value: "On"
       - name: opcache.enable
         value: 1
-      # - name: memory_limit
-      #   value: 96M # Default: 128M
   tags:
-    - molecule-idempotence-notest # PHP module mysql cannot be idempotently enabled.
+    - molecule-idempotence-notest # Module mysql cannot be idempotently enabled.
