@@ -18,15 +18,11 @@
 # Custom configuration for YAML lint.
 #
 # @copyright    2023 Geoffrey Bernardo van Wyk (https://geoffreyvanwyk.dev)
-# @link         http://tinyurl.com/yamllint-extend-conf 
+# @link         http://tinyurl.com/yamllint-extend-conf
 ##
 
 extends: default
 
 rules:
-  truthy:
-    allowed-values: ["true", "false", "yes", "no"]
-    check-keys: true
-
   comments:
     min-spaces-from-content: 1
