@@ -12,16 +12,26 @@
 # Public License for more details.
 #
 # You should have received a copy of the GNU General Public License along with
-# Ansible role geoffreyvanwyk.moodle. If not, see <https://www.gnu.org/licenses/>.
+# Ansible role geoffreyvanwyk.moodle. If not, see
+# <https://www.gnu.org/licenses/>.
 
 ##
 # Variables calculated by the role.
 #
 # @copyright  2023 Geoffrey Bernardo van Wyk (https://geoffreyvanwyk.dev)
-# @see        Understanding Variable Precedence {@link https://docs.ansible.com/ansible/latest/playbook_guide/playbooks_variables.html#understanding-variable-precedence}
+# @link      http://tinyurl.com/ansible-variable-precedence
 ##
 
-moodle_instance: "{{ moodle_web_domain + ('' if moodle_web_path == '' else '-' + moodle_web_path) }}"
+moodle_instance: "{{
+  moodle_web_domain + ('' if moodle_web_path == '' else '-' + moodle_web_path)
+  }}"
 
-moodle_cfg_wwwroot: "{{ moodle_web_protocol }}://{{ moodle_web_domain }}/{{ moodle_web_path }}"
+moodle_cfg_wwwroot: "{{
+  moodle_web_protocol
+  }}://{{
+  moodle_web_domain
+  }}/{{
+  moodle_web_path
+  }}"
+
 moodle_cfg_dataroot: "{{ '/var/www/moodledata-' + moodle_instance }}"

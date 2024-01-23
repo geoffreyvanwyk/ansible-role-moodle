@@ -12,23 +12,24 @@
 # Public License for more details.
 #
 # You should have received a copy of the GNU General Public License along with
-# Ansible role geoffreyvanwyk.moodle. If not, see <https://www.gnu.org/licenses/>.
+# Ansible role geoffreyvanwyk.moodle. If not, see
+# <https://www.gnu.org/licenses/>.
 
 ##
 # Tasks that run when notified by tasks that changed the managed node.
 #
 # @copyright  2023 Geoffrey Bernardo van Wyk (https://geoffreyvanwyk.dev)
-# @see        Handlers: running operations on change {@link https://docs.ansible.com/ansible/latest/playbook_guide/playbooks_handlers.html#handlers}
+# @link       http://tinyurl.com/ansible-handlers
 ##
 
 - name: Restart Apache web service
-  become: yes
+  become: true
   ansible.builtin.sysvinit:
     name: apache2
     state: restarted
 
 - name: Restart cron service
-  become: yes
+  become: true
   ansible.builtin.sysvinit:
     name: cron
     state: restarted

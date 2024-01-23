@@ -12,25 +12,26 @@
 # Public License for more details.
 #
 # You should have received a copy of the GNU General Public License along with
-# Ansible role geoffreyvanwyk.moodle. If not, see <https://www.gnu.org/licenses/>.
+# Ansible role geoffreyvanwyk.moodle. If not, see
+# <https://www.gnu.org/licenses/>.
 
 ##
 # Sets the default values of the role's variables that can be overridden.
 #
 # @copyright  2023 Geoffrey Bernardo van Wyk (https://geoffreyvanwyk.dev)
-# @see        Understanding Variable Precedence {@link https://docs.ansible.com/ansible/latest/playbook_guide/playbooks_variables.html#understanding-variable-precedence}
+# @link       http://tinyurl.com/ansible-variable-precedence
 ##
 
 # Deployment of Source Code
-moodle_deploy_repository: https://github.com/moodle/moodle  # Public repository.
-moodle_deploy_version: MOODLE_402_STABLE                    # Branch, tag, or commit.
-moodle_deploy_update: yes                                   # Whether to pull new commits.
-moodle_deploy_destination: /var/www/html/moodle             # Also the web document root.
+moodle_deploy_repository: https://github.com/moodle/moodle # Public repository.
+moodle_deploy_version: MOODLE_402_STABLE # Branch, tag, or commit.
+moodle_deploy_update: true # Whether to pull new commits.
+moodle_deploy_destination: /var/www/html/moodle # Also the web document root.
 
 # Set-Up of Database
 
 ## Whether or not to install a database service.
-moodle_db_install: yes
+moodle_db_install: true
 
 ## Which database service to use: pgsql or maridb.
 moodle_cfg_dbtype: pgsql
@@ -45,9 +46,9 @@ moodle_cfg_dbuser: moodler
 ## Random string generated for database password.
 moodle_cfg_dbpass: "{{
   lookup('ansible.builtin.password',
-         '/tmp/' + moodle_cfg_dbuser + '-db_password',
-         length=24,
-         chars=['ascii_letters', 'digits']) }}"
+  '/tmp/' + moodle_cfg_dbuser + '-db_password',
+  length=24,
+  chars=['ascii_letters', 'digits']) }}"
 
 # Web Hosting
 
@@ -69,7 +70,9 @@ moodle_web_root: subdirectory
 ##
 ## The list of directories to be protected can be found on an existing Moodle
 ## instance (e.g. sandbox.moodledemo.net) by visiting:
-## "Site Administration > Reports > Security Checks > Check public/private paths".
+## "Site Administration > Reports
+##                      > Security Checks
+##                      > Check public/private paths".
 moodle_web_protected_directories:
   - \.git
   - \.github
@@ -86,7 +89,9 @@ moodle_web_protected_directories:
 ##
 ## The list of files to be protected can be found on an existing Moodle
 ## instance (e.g. sandbox.moodledemo.net) by visiting:
-## "Site Administration > Reports > Security Checks > Check public/private paths".
+## "Site Administration > Reports
+##                      > Security Checks
+##                      > Check public/private paths".
 moodle_web_protected_files:
   - \.env
   - \.lock

@@ -1,3 +1,4 @@
+---
 # This file is part of Ansible role geoffreyvanwyk.moodle.
 #
 # Ansible role geoffreyvanwyk.moodle is free software: you can redistribute it
@@ -11,7 +12,8 @@
 # Public License for more details.
 #
 # You should have received a copy of the GNU General Public License along with
-# Ansible role geoffreyvanwyk.moodle. If not, see <https://www.gnu.org/licenses/>.
+# Ansible role geoffreyvanwyk.moodle. If not, see
+# <https://www.gnu.org/licenses/>.
 
 ##
 # Override variables for this Molecule scenario.
@@ -20,6 +22,6 @@
 ##
 
 moodle_cfg_forcedsettings:
-  additionalhtmlfooter: '<style>p {color: red}</style>'
+  additionalhtmlfooter: "<style>p {color: red}</style>"
   enabledashboard: 0
   navcourselimit: 12
