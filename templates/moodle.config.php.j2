@@ -405,7 +405,7 @@ $CFG->admin = '{{ moodle_cfg_admin | default("admin") }}';
 // It is possible to add extra themes directory stored outside of $CFG->dirroot.
 // This local directory does not have to be accessible from internet.
 //
-{{ (moodle_cfg_themedir is not defined) | ternary('//', '  ') }}     $CFG->themedir = {{ moodle_cfg_themedir | default("'/location/of/extra/themes'") }};
+{{ (moodle_cfg_themedir is not defined) | ternary('//', '  ') }}     $CFG->themedir = '{{ moodle_cfg_themedir | default('/location/of/extra/themes') }}';
 //
 // It is possible to specify different cache and temp directories, use local fast filesystem
 // for normal web servers. Server clusters MUST use shared filesystem for cachedir!
