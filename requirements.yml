@@ -21,4 +21,8 @@
 # @copyright  2023 Geoffrey Bernardo van Wyk (https://geoffreyvanwyk.dev)
 ##
 
-- name: geoffreyvanwyk.php
+roles:
+  - name: geoffreyvanwyk.php
+
+collections:
+  - name: geoffreyvanwyk.moodle

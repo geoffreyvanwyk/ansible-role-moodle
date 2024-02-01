@@ -16,30 +16,13 @@
 # <https://www.gnu.org/licenses/>.
 
 ##
-# Entry point for all tasks performed by the role.
+# Override variables for this Molecule scenario.
 #
 # @copyright  2023 Geoffrey Bernardo van Wyk (https://geoffreyvanwyk.dev)
 ##
 
-- name: Install PHP
-  ansible.builtin.import_tasks: ./install_php.yml
-
-- name: Install database service
-  when: moodle_db_install
-  ansible.builtin.import_tasks: ./install_database_service.yml
-
-- name: Deploy Moodle
-  ansible.builtin.import_tasks: ./deploy_source_code.yml
-
-- name: Deploy Plugins
-  ansible.builtin.import_tasks: ./deploy_plugins.yml
-
-- name: Install and configure web hosting
-  ansible.builtin.import_tasks: ./configure_web_hosting.yml
-
-- name: Install and configure Moodle on server
-  ansible.builtin.import_tasks: ./install_moodle.yml
-
-- name: Upgrade Moodle # noqa no-handler
-  when: moodle_deploy_source_code.changed
-  ansible.builtin.import_tasks: ./upgrade_moodle.yml
+moodle_plugins_git:
+  - name: theme_learningsandboxonline
+    repository: >-
+      https://github.com/geoffreyvanwyk/moodle-theme_learningsandboxonline
+    version: "{{ moodle_deploy_version }}"

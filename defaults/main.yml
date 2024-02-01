@@ -24,7 +24,7 @@
 
 # Deployment of Source Code
 moodle_deploy_repository: https://github.com/moodle/moodle # Public repository.
-moodle_deploy_version: MOODLE_402_STABLE # Branch, tag, or commit.
+moodle_deploy_version: MOODLE_403_STABLE # Branch, tag, or commit.
 moodle_deploy_update: true # Whether to pull new commits.
 moodle_deploy_destination: /var/www/html/moodle # Also the web document root.
 
@@ -155,3 +155,7 @@ moodle_support_email: "{{ moodle_admin_email }}"
 ##   enabledashboard: 0
 ##   navcourselimit: 12
 moodle_cfg_forcedsettings: {}
+
+# Extend with Plugins
+
+moodle_plugins_git: []

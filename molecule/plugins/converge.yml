@@ -16,30 +16,27 @@
 # <https://www.gnu.org/licenses/>.
 
 ##
-# Entry point for all tasks performed by the role.
+# Contains the call to the role when testing with Molecule.
 #
 # @copyright  2023 Geoffrey Bernardo van Wyk (https://geoffreyvanwyk.dev)
 ##
 
-- name: Install PHP
-  ansible.builtin.import_tasks: ./install_php.yml
+- name: Converge
+  hosts: all
 
-- name: Install database service
-  when: moodle_db_install
-  ansible.builtin.import_tasks: ./install_database_service.yml
+  vars_files:
+    - vars/main.yml
 
-- name: Deploy Moodle
-  ansible.builtin.import_tasks: ./deploy_source_code.yml
+  tasks:
+    - name: Update APT package cache
+      # Sometimes the package list on the server does not contain all the
+      # available packages. A fresh list has to be downloaded from the Ubuntu
+      # package repositories.
+      become: true
+      ansible.builtin.apt:
+        update_cache: true
+        cache_valid_time: "{{ 60 * 60 * 24 }}" # seconds => 24 hours
 
-- name: Deploy Plugins
-  ansible.builtin.import_tasks: ./deploy_plugins.yml
-
-- name: Install and configure web hosting
-  ansible.builtin.import_tasks: ./configure_web_hosting.yml
-
-- name: Install and configure Moodle on server
-  ansible.builtin.import_tasks: ./install_moodle.yml
-
-- name: Upgrade Moodle # noqa no-handler
-  when: moodle_deploy_source_code.changed
-  ansible.builtin.import_tasks: ./upgrade_moodle.yml
+    - name: "Include geoffreyvanwyk.moodle"
+      ansible.builtin.include_role:
+        name: "geoffreyvanwyk.moodle"
