@@ -16,30 +16,28 @@
 # <https://www.gnu.org/licenses/>.
 
 ##
-# Entry point for all tasks performed by the role.
+#  The central configuration entrypoint for Molecule.
 #
 # @copyright  2023 Geoffrey Bernardo van Wyk (https://geoffreyvanwyk.dev)
+# @link       http://tinyurl.com/molecule-scenario-layout
 ##
 
-- name: Install PHP
-  ansible.builtin.import_tasks: ./install_php.yml
-
-- name: Install database service
-  when: moodle_db_install
-  ansible.builtin.import_tasks: ./install_database_service.yml
-
-- name: Deploy Moodle
-  ansible.builtin.import_tasks: ./deploy_source_code.yml
-
-- name: Deploy Plugins
-  ansible.builtin.import_tasks: ./deploy_plugins.yml
-
-- name: Install and configure web hosting
-  ansible.builtin.import_tasks: ./configure_web_hosting.yml
-
-- name: Install and configure Moodle on server
-  ansible.builtin.import_tasks: ./install_moodle.yml
-
-- name: Upgrade Moodle # noqa no-handler
-  when: moodle_deploy_source_code.changed
-  ansible.builtin.import_tasks: ./upgrade_moodle.yml
+dependency:
+  name: galaxy
+driver:
+  name: docker
+platforms:
+  - name: ansible_role_moodle_molecule_${MOLECULE_DISTRO:-ubuntu2204}
+    image: "geoffreyvanwyk/docker-${MOLECULE_DISTRO:-ubuntu2204}-ansible:latest"
+    pre_build_image: true
+    published_ports:
+      - "0.0.0.0:80:80"
+provisioner:
+  name: ansible
+  inventory:
+    host_vars:
+      ansible_role_moodle_molecule_${MOLECULE_DISTRO:-ubuntu2204}:
+        ansible_user: ubuntu
+        moodle_deploy_version: ${MOLECULE_MOODLE_VERSION:-MOODLE_403_STABLE}
+verifier:
+  name: ansible

@@ -16,8 +16,8 @@
 # <https://www.gnu.org/licenses/>.
 
 ##
-# Deploy the Moodle source code from a remote source code repository host like
-# GitHub.
+# Deploy the Moodle and plugins source code from a remote source code
+# repository host like GitHub.
 #
 # @copyright  2023 Geoffrey Bernardo van Wyk (https://geoffreyvanwyk.dev)
 ##

@@ -16,30 +16,36 @@
 # <https://www.gnu.org/licenses/>.
 
 ##
-# Entry point for all tasks performed by the role.
+# Contains specific tests against the state of the container after the role has
+# finished executing.
 #
 # @copyright  2023 Geoffrey Bernardo van Wyk (https://geoffreyvanwyk.dev)
 ##
 
-- name: Install PHP
-  ansible.builtin.import_tasks: ./install_php.yml
+- name: Verify
+  hosts: all
+  gather_facts: false
 
-- name: Install database service
-  when: moodle_db_install
-  ansible.builtin.import_tasks: ./install_database_service.yml
+  vars_files:
+    - ../../defaults/main.yml
+    - vars/main.yml
 
-- name: Deploy Moodle
-  ansible.builtin.import_tasks: ./deploy_source_code.yml
+  tasks:
+    - name: Obtain list of additional plugins
+      args:
+        executable: /bin/bash
+      ansible.builtin.shell:
+        chdir: "{{ moodle_deploy_destination }}"
+        cmd: >-
+          set -o pipefail
+          &&
+          php admin/cli/uninstall_plugins.php --show-contrib
+          |
+          cut -f1
+      register: moodle_additional_plugins_installed
+      changed_when: false
 
-- name: Deploy Plugins
-  ansible.builtin.import_tasks: ./deploy_plugins.yml
-
-- name: Install and configure web hosting
-  ansible.builtin.import_tasks: ./configure_web_hosting.yml
-
-- name: Install and configure Moodle on server
-  ansible.builtin.import_tasks: ./install_moodle.yml
-
-- name: Upgrade Moodle # noqa no-handler
-  when: moodle_deploy_source_code.changed
-  ansible.builtin.import_tasks: ./upgrade_moodle.yml
+    - name: Assert that plugins are installed
+      loop: "{{ moodle_plugins_git }}"
+      ansible.builtin.assert:
+        that: item.name in moodle_additional_plugins_installed.stdout_lines
