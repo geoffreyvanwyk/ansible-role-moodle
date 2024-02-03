@@ -51,7 +51,7 @@ the directory from which the web server will serve it.
 php_version: 8.1
 ```
 
-The PHP version is automatically set based on the `moodle_deploy_version`.
+The PHP version is automatically set based on the `moodle_version`.
 
 ---
 
@@ -139,7 +139,6 @@ The list of roles on which this role depends can be found in `requirements.yml` 
 - hosts: servers
   roles:
     - role: geoffreyvanwyk.moodle
-      moodle_deploy_version: MOODLE_403_STABLE
       moodle_plugins_git:
         - name: theme_learningsandboxonline
           repository: https://github.com/geoffreyvanwyk/moodle-theme_learningsandboxonline

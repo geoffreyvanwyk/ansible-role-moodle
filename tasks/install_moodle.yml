@@ -71,9 +71,9 @@
       - --adminpass={{ moodle_admin_password }}
       - --adminemail={{ moodle_admin_email }}
       - "{{
-        ((moodle_deploy_version == 'MOODLE_311_STABLE')
+        ((moodle_version == 3.11)
         or
-        (moodle_deploy_version == 'MOODLE_400_STABLE'))
+        (moodle_version == 4.0))
         | ternary(omit, '--supportemail=' + moodle_support_email)
         }}"
   ansible.builtin.command:

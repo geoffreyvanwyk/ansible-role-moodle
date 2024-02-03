@@ -24,13 +24,8 @@
 - name: Set PHP version
   ansible.builtin.set_fact:
     php_version: "{{
-      '8.2'
-      if (moodle_deploy_version in ['MOODLE_403_STABLE', 'MOODLE_402_STABLE'])
-      else '8.1'
-      if (moodle_deploy_version in ['MOODLE_401_STABLE'])
-      else '8.0'
-      if (moodle_deploy_version in ['MOODLE_400_STABLE', 'MOODLE_311_STABLE'])
-      else '7.4' }}"
+      lookup('geoffeyvanwyk.moodle.php_version', moodle_version=moodle_version)
+      }}"
 
 - name: Install PHP
   ansible.builtin.include_role:

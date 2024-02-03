@@ -24,6 +24,7 @@
 
 # ------ Basic {{{1
 
+# Human-readable format of the Moodle version to be installed.
 moodle_version: "4.3"
 
 # Whether the Moodle instance is installed for 'development', or 'production'.
@@ -45,7 +46,7 @@ moodle_deploy_version: "{{
 moodle_deploy_update: true
 
 # This should be the document root or subdirectory of the document root of a
-# web service virtualhost.
+# web service virtualhost. The directory should be empty if already exists.
 moodle_deploy_destination: /var/www/html/moodle
 
 # ------ Set-Up of Database {{{1

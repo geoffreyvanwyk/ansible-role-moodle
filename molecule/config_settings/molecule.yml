@@ -38,6 +38,6 @@ provisioner:
     host_vars:
       ansible_role_moodle_molecule_${MOLECULE_DISTRO:-ubuntu2204}:
         ansible_user: ubuntu
-        moodle_deploy_version: ${MOLECULE_MOODLE_VERSION:-MOODLE_402_STABLE}
+        moodle_version: ${MOLECULE_MOODLE_VERSION:-4.3}
 verifier:
   name: ansible
