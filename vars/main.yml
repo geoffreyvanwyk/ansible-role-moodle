@@ -18,10 +18,11 @@
 ##
 # Variables calculated by the role.
 #
-# @copyright  2023 Geoffrey Bernardo van Wyk (https://geoffreyvanwyk.dev)
-# @link      http://tinyurl.com/ansible-variable-precedence
+# @copyright  2023 Geoffrey Bernardo van Wyk {@link https://geoffreyvanwyk.dev}
+# @link       http://tinyurl.com/ansible-variable-precedence
 ##
 
+# Uniquely identifies a Moodle instance.
 moodle_instance: "{{
   moodle_web_domain + ('' if moodle_web_path == '' else '-' + moodle_web_path)
   }}"
