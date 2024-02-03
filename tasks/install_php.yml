@@ -24,7 +24,7 @@
 - name: Set PHP version
   ansible.builtin.set_fact:
     php_version: "{{
-      lookup('geoffeyvanwyk.moodle.php_version', moodle_version=moodle_version)
+      lookup('geoffreyvanwyk.moodle.php_version', moodle_version=moodle_version)
       }}"
 
 - name: Install PHP
