@@ -46,7 +46,8 @@ moodle_deploy_version: "{{
 moodle_deploy_update: true
 
 # This should be the document root or subdirectory of the document root of a
-# web service virtualhost. The directory should be empty if already exists.
+# web service virtualhost, without the trailing slash. The directory should be
+# empty if it already exists.
 moodle_deploy_destination: /var/www/html/moodle
 
 # ------ Set-Up of Database {{{1
@@ -83,10 +84,16 @@ moodle_web_protocol: http
 # Domain name of the web service virtual host.
 moodle_web_domain: 127.0.0.1
 
+# File system path to the document root of the web service virtual host,
+# without the trailing slash.
+moodle_web_documentroot: /var/www/html
+
 # Subdirectory path relative to the document root of the web service virtual
 # host, without leading or trailing slashes.
 # It must not include any spaces anywhere.
-moodle_web_path: moodle
+moodle_web_path: "{{
+  moodle_deploy_destination | replace(moodle_web_documentroot, '')
+  }}"
 
 # Whether to serve Moodle from a subdirectory or virtualhost.
 #
@@ -97,7 +104,9 @@ moodle_web_path: moodle
 # - moodle_web_path:           must be subdirectory path relative to the
 #                              document root of the existing virtual host and
 #                              it must match moodle_deploy_destination.
-moodle_web_root: subdirectory
+moodle_web_root: "{{
+  'subdirectory' if moodle_web_path | length > 1 else 'virtualhost'
+  }}"
 
 # Directories in the Moodle source code that must NOT be directly accessible
 # over the web and for which the web server must respond with Not Found.
