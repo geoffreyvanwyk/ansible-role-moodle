@@ -63,15 +63,16 @@ jobs:
       matrix:
         molecule-scenario:
           - default
+          - config_settings
           - mariadb
+          - plugins
         ubuntu-version:
           - ubuntu2004
           - ubuntu2204
         moodle-version:
-          - MOODLE_39_STABLE
-          - MOODLE_400_STABLE
-          - MOODLE_401_STABLE
-          - MOODLE_402_STABLE
+          - 4.1
+          - 4.2
+          - 4.3
 
     steps:
       - name: Check out the codebase.
