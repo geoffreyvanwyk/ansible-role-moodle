@@ -24,37 +24,50 @@
 ##
 
 name: Build
-"on":
+on: # yamllint disable-line rule:truthy
   pull_request:
   push:
     branches:
       - master
 
-defaults:
-  run:
-    working-directory: "geoffreyvanwyk.moodle"
-
 jobs:
-  lint:
-    name: Lint
-    runs-on: ubuntu-latest
+  yamllint:
+    name: YAML Lint
+    runs-on: ubuntu-22.04
     steps:
-      - name: Check out the codebase.
+      - name: Check out the codebase
         uses: actions/checkout@v2
-        with:
-          path: "geoffreyvanwyk.moodle"
 
-      - name: Set up Python 3.
+      - name: Set up Python 3
         uses: actions/setup-python@v2
         with:
           python-version: "3.x"
 
-      - name: Install test dependencies.
-        run: pip3 install yamllint
+      - name: Install test dependencies
+        run: pip3 install --requirement requirements.txt
 
-      - name: Lint code.
-        run: |
-          yamllint .
+      - name: Lint code
+        run: yamllint .
+
+  ansiblelint:
+    name: Ansible Lint
+    needs: yamllint
+    runs-on: ubuntu-22.04
+
+    steps:
+      - name: Check out the codebase
+        uses: actions/checkout@v2
+
+      - name: Set up Python 3
+        uses: actions/setup-python@v2
+        with:
+          python-version: "3.x"
+
+      - name: Install test dependencies
+        run: pip3 install --requirement requirements.txt
+
+      - name: Lint code
+        run: ansible-lint .
 
   molecule:
     name: Molecule
@@ -75,7 +88,7 @@ jobs:
           - 4.3
 
     steps:
-      - name: Check out the codebase.
+      - name: Check out the codebase
         uses: actions/checkout@v2
         with:
           path: "geoffreyvanwyk.moodle"
@@ -85,8 +98,8 @@ jobs:
         with:
           python-version: "3.x"
 
-      - name: Install test dependencies.
-        run: pip3 install ansible molecule molecule-plugins[docker] docker
+      - name: Install test dependencies
+        run: pip3 install --requirement requirements.txt
 
       - name: Run Molecule tests.
         run: molecule test --scenario-name ${{ matrix.molecule-scenario }}
