@@ -71,6 +71,7 @@ jobs:
 
   molecule:
     name: Molecule
+    needs: ansiblelint
     runs-on: ubuntu-22.04
     strategy:
       matrix:
