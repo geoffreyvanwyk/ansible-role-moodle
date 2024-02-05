@@ -88,7 +88,6 @@ Variable `moodle_web_root` specifies whether Moodle is served from a subdirector
 ### Installation & Server-Side configuration
 
 ```yaml
-moodle_environment: production
 moodle_cfg_wwwroot: ... # Calculated based on web protocol, domain and path.
 moodle_cfg_dataroot: ... # Calculated based on web domain and path.
 moodle_site_fullname: Modular Object-Orientated Dynamic Learning Environment
