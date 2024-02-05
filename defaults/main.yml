@@ -16,7 +16,8 @@
 # <https://www.gnu.org/licenses/>.
 
 ##
-# Sets the default values of the role's variables that can be overridden.
+# Sets the default values of the role's variables that the user would normally
+# override.
 #
 # @copyright  2023 Geoffrey Bernardo van Wyk {@link https://geoffreyvanwyk.dev}
 # @link       http://tinyurl.com/ansible-variable-precedence
@@ -27,56 +28,24 @@
 # Human-readable format of the Moodle version to be installed.
 moodle_version: "4.3"
 
-# Whether the Moodle instance is installed for 'development', or 'production'.
-# In a development environment, certain things can be allowed, e.g. Moodle
-# development mode, unstable plugins, Xdebug etc.
-moodle_environment: production
-
 # ------ Deployment of Source Code {{{1
 
-# Public repository.
-moodle_deploy_repository: https://github.com/moodle/moodle
-
-# Branch, tag, or commit.
-moodle_deploy_version: "{{
-  lookup('geoffreyvanwyk.moodle.stable_branch', moodle_version=moodle_version)
-  }}"
-
-# Whether to pull new commits.
-moodle_deploy_update: true
-
-# This should be the document root or subdirectory of the document root of a
-# web service virtualhost, without the trailing slash. The directory should be
-# empty if it already exists.
+# The file system path of the directory to which the Moodle source code should
+# be dowloaded.
+#
+# If the directory does not exist, the role will create it. If it already
+# exists, it should be empty, because Git will not clone a repository into a
+# nonempty directory.
+#
+# The directory should be the document root or subdirectory of the document
+# root of a web service virtualhost, without the trailing slash.
 moodle_deploy_destination: /var/www/html/moodle
 
-# ------ Set-Up of Database {{{1
-
-# Whether or not to install a database service.
-moodle_db_install: true
-
-# Which database service to use: PostgreSQL (pgsql) or MariaDB (maridb).
-moodle_db_type: pgsql
-
-## The name of the database.
-moodle_db_name: moodle
-
-# If a database service has to be installed, this user will be created with
-# administrative provileges on the database.
-moodle_db_username: moodler
-
-# Random string generated for database password.
-moodle_db_password: "{{
-  lookup('ansible.builtin.password',
-  '/tmp/' + moodle_db_username + '-db_password',
-  length=24,
-  chars=['ascii_letters', 'digits'])
-  }}"
+# Whether to pull new Git commits from the remote repository if the role is
+# run after the initial installation.
+moodle_deploy_update: true
 
 # ------ Web Hosting {{{1
-
-# Whether to serve Moodle with Apache httpd (apache2) or Nginx (nginx).
-moodle_web_service: apache2
 
 # Whether Moodle is served over 'https' or just 'http'.
 moodle_web_protocol: http
@@ -88,84 +57,31 @@ moodle_web_domain: 127.0.0.1
 # without the trailing slash.
 moodle_web_documentroot: /var/www/html
 
-# Subdirectory path relative to the document root of the web service virtual
-# host, without leading or trailing slashes.
-# It must not include any spaces anywhere.
-moodle_web_path: "{{
-  moodle_deploy_destination | replace(moodle_web_documentroot, '')
+# ------ Set-Up of Database {{{1
+
+# Whether or not to install a database service.
+moodle_db_install: true
+
+# Which database service to use: PostgreSQL (pgsql) or MariaDB (maridb).
+moodle_db_type: pgsql
+
+# If a database service has to be installed, this user will be created with
+# administrative provileges on the database. If the database service is already
+# running on a different server, the user must supply the username and
+# password.
+moodle_db_username: moodler
+
+# If theh database service has to be installed, a random string is generated
+# for database password. If the database service is already running on a
+# different server, the user must supply the username and password.
+moodle_db_password: "{{
+  lookup('ansible.builtin.password',
+  '/tmp/' + moodle_db_username + '-db_password',
+  length=24,
+  chars=['ascii_letters', 'digits'])
   }}"
-
-# Whether to serve Moodle from a subdirectory or virtualhost.
-#
-# When served from a subdirectory, variables:
-#
-# - moodle_deploy_destination: must be a subdirectory of the document root of
-#                              an existing virtual host.
-# - moodle_web_path:           must be subdirectory path relative to the
-#                              document root of the existing virtual host and
-#                              it must match moodle_deploy_destination.
-moodle_web_root: "{{
-  'subdirectory' if moodle_web_path | length > 1 else 'virtualhost'
-  }}"
-
-# Directories in the Moodle source code that must NOT be directly accessible
-# over the web and for which the web server must respond with Not Found.
-#
-# The list of directories to be protected can be found on an existing Moodle
-# instance (e.g. sandbox.moodledemo.net) by visiting:
-# "Site Administration > Reports
-#                      > Security Checks
-#                      > Check public/private paths".
-moodle_web_protected_directories:
-  - \.git
-  - \.github
-  - \.idea
-  - \.vscode
-  - behat
-  - lib/classes
-  - fixtures
-  - node_modules
-  - vendor
-
-# Files in the Moodle source code that must NOT be directly accessible
-# over the web and for which the web server must respond with Not Found.
-#
-# The list of files to be protected can be found on an existing Moodle
-# instance (e.g. sandbox.moodledemo.net) by visiting:
-# "Site Administration > Reports
-#                      > Security Checks
-#                      > Check public/private paths".
-moodle_web_protected_files:
-  - \.env
-  - \.lock
-  - \.stylelintrc
-  - behat\.yml\.dist
-  - behat\.yml
-  - composer\.json
-  - composer\.lock
-  - db/install\.xml
-  - environment\.xml
-  - package\.json
-  - package\.lock
-  - phpunit\.xml
-  - phpunit\.xml\.dist
-  - readme\.txt
-  - readme_moodle\.txt
-  - README\.txt
-  - README\.md
-  - upgrade\.txt
 
 # ------ Install & Server-side Configuration {{{1
-
-# Database connection details.
-moodle_cfg_dbtype: "{{ moodle_db_type }}"
-moodle_cfg_dbname: "{{ moodle_db_name }}"
-moodle_cfg_dbuser: "{{ moodle_db_username }}"
-moodle_cfg_dbpass: "{{ moodle_db_password }}"
-
-# File system permissions that must be applied to new directories created
-# within the moodledata directorry.
-moodle_cfg_directorypermissions: "02777"
 
 # Name and description of the Moodle instance.
 moodle_site_fullname: Modular Object-Oriented Dynamic Learning Environment
