@@ -22,6 +22,7 @@
 ##
 
 - name: Set PHP version
+  # The PHP version depends on the requested Moodle version.
   ansible.builtin.set_fact:
     php_version: "{{
       lookup('geoffreyvanwyk.moodle.php_version', moodle_version=moodle_version)
@@ -33,10 +34,6 @@
     apply:
       become: true
   vars:
-    # php_version
-    # The PHP version depends on the requested Moodle version. The php_version
-    # variable is calculated in vars/main.yml and not here because it is also
-    # needed in other parts of the role.
     php_mod_enabled:
       # The list of required and recommended PHP extensions (modules) for a
       # particular Moodle version can be found on page
@@ -45,9 +42,9 @@
       #
       # The Moodle role installs both required and recommended extensions.
       #
-      # The following extensions are part of PHP core or compiled into PHP (e.g.
-      # openssl); as such they are installed as part of the php Ubuntu package.
-      # When attempting to install them, the error
+      # The following commented-out extensions are part of PHP core or compiled
+      # into PHP (e.g. openssl); as such they are installed as part of the
+      # Ubuntu package named php. When attempting to install them, the error
       # "No package matching 'php{php_version}-{mod}' is available" is raised,
       # or "'php{php_version}-{mod}' has no installation candidate" and that the
       # package is virtual, e.g. json. See

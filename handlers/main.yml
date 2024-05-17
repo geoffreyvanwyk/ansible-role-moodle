@@ -22,6 +22,9 @@
 # @link       http://tinyurl.com/ansible-handlers
 ##
 
+- name: Upgrade Moodle
+  ansible.builtin.include_tasks: ./upgrade_moodle.yml
+
 - name: Restart Apache web service
   become: true
   ansible.builtin.sysvinit:
