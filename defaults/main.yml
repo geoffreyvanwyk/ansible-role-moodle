@@ -71,8 +71,8 @@ moodle_db_type: pgsql
 # password.
 moodle_db_username: moodler
 
-# If theh database service has to be installed, a random string is generated
-# for database password. If the database service is already running on a
+# If the database service has to be installed, a random string is generated
+# for the database password. If the database service is already running on a
 # different server, the user must supply the username and password.
 moodle_db_password: "{{
   lookup('ansible.builtin.password',

@@ -64,7 +64,7 @@
     dest: "{{ moodle_deploy_destination }}"
     umask: "0002"
     update: "{{ moodle_deploy_update }}"
-  register: moodle_deploy_source_code
+  notify: Upgrade Moodle
 
 - name: Ensure Ansible user has write access to additional plugin directories
   # This ensures that the Ansible user will have write access to the directories

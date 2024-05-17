@@ -37,9 +37,5 @@
 - name: Install and configure web hosting
   ansible.builtin.import_tasks: ./configure_web_hosting.yml
 
-- name: Install and configure Moodle on server
+- name: Install Moodle and configure server-side
   ansible.builtin.import_tasks: ./install_moodle.yml
-
-- name: Upgrade Moodle # noqa no-handler
-  when: moodle_deploy_source_code.changed
-  ansible.builtin.import_tasks: ./upgrade_moodle.yml
