@@ -107,8 +107,8 @@ moodle_cfg_forcedsettings: {}
 
 # ------ Extend with Plugins {{{1
 
-# Download plugins from a Git repository in case they are not in the Moodle
-# plugins directory. For example:
+# Download plugins from a public Git repository in case they are not in the
+# Moodle plugins directory. For example:
 #
 # moodle_plugins_git;
 #   - name: block_todos

@@ -1,0 +1,43 @@
+---
+# This file is part of Ansible role geoffreyvanwyk.moodle.
+#
+# Ansible role geoffreyvanwyk.moodle is free software: you can redistribute it
+# and/or modify it under the terms of the GNU General Public License as
+# published by the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# Ansible role geoffreyvanwyk.moodle is distributed in the hope that it will be
+# useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General
+# Public License for more details.
+#
+# You should have received a copy of the GNU General Public License along with
+# Ansible role geoffreyvanwyk.moodle. If not, see
+# <https://www.gnu.org/licenses/>.
+
+##
+#  The central configuration entrypoint for Molecule.
+#
+# @copyright  2023 Geoffrey Bernardo van Wyk (https://geoffreyvanwyk.dev)
+# @link       http://tinyurl.com/molecule-scenario-layout
+##
+
+dependency:
+  name: galaxy
+driver:
+  name: docker
+platforms:
+  - name: ansible_role_moodle_molecule_${MOLECULE_DISTRO:-ubuntu2204}
+    image: "geoffreyvanwyk/docker-${MOLECULE_DISTRO:-ubuntu2204}-ansible:latest"
+    pre_build_image: true
+    published_ports:
+      - "0.0.0.0:80:80"
+provisioner:
+  name: ansible
+  inventory:
+    host_vars:
+      ansible_role_moodle_molecule_${MOLECULE_DISTRO:-ubuntu2204}:
+        ansible_user: ubuntu
+        moodle_version: ${MOLECULE_MOODLE_VERSION:-4.3}
+verifier:
+  name: ansible

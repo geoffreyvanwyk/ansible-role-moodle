@@ -16,25 +16,22 @@
 # <https://www.gnu.org/licenses/>.
 
 ##
-# Clone source code of plugins from remote Git repository hosts like GitHub.
+# Contains specific tests against the state of the container after the role has
+# finished executing.
 #
 # @copyright  2023 Geoffrey Bernardo van Wyk (https://geoffreyvanwyk.dev)
 ##
 
-- name: Deploy source code of plugins
-  loop: "{{ moodle_plugins_git }}"
-  ansible.builtin.git:
-    repo: "{{ item.repository }}"
-    version: "{{ item.version }}"
-    dest: "{{
-      moodle_deploy_destination + '/' +
-      lookup('geoffreyvanwyk.moodle.plugin_directory',
-      frankenstyle_name=item.name)
-      }}"
-  notify: Upgrade Moodle
+- name: Verify
+  hosts: all
+  gather_facts: false
 
-- name: Uninstall plugins
-  block:
+  vars_files:
+    - ../../defaults/main.yml
+    - ../../vars/main.yml
+    - vars/main.yml
+
+  tasks:
     - name: Obtain list of additional plugins
       args:
         executable: /bin/bash
@@ -49,6 +46,7 @@
       register: moodle_additional_plugins_installed
       changed_when: false
 
-    - name: Debug
-      ansible.builtin.debug:
-        msg: "{{ moodle_additional_plugins_installed }}"
+    - name: Assert that plugins are not installed anymore
+      loop: "{{ moodle_plugins_git }}"
+      ansible.builtin.assert:
+        that: item.name not in moodle_additional_plugins_installed.stdout_lines
