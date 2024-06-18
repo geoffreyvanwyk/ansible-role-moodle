@@ -21,7 +21,20 @@
 # @copyright  2023 Geoffrey Bernardo van Wyk (https://geoffreyvanwyk.dev)
 ##
 
+moodle_plugins:
+  - name: availability_relativedate
+    archive: "{{
+      'https://moodle.org/plugins/'
+      'download.php/31728/availability_relativedate_moodle44_2024042000.zip' }}"
+  - name: tool_datewatch
+    archive: "{{
+      'https://moodle.org/plugins/'
+      'download.php/32321/tool_datewatch_moodle44_2024061100.zip' }}"
+
 moodle_plugins_git:
+  - name: mod_customcert
+    repository: https://github.com/mdjnelson/moodle-mod_customcert
+    version: "{{ moodle_deploy_version }}"
   - name: theme_learningsandboxonline
     repository: >-
       https://github.com/geoffreyvanwyk/moodle-theme_learningsandboxonline

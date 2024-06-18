@@ -31,7 +31,7 @@
 - name: Deploy Moodle
   ansible.builtin.import_tasks: ./deploy_source_code.yml
 
-- name: Deploy Plugins
+- name: Deploy plugins
   ansible.builtin.import_tasks: ./deploy_plugins.yml
 
 - name: Install and configure web hosting

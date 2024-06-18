@@ -107,8 +107,30 @@ moodle_cfg_forcedsettings: {}
 
 # ------ Extend with Plugins {{{1
 
-# Download plugins from a Git repository in case they are not in the Moodle
-# plugins directory. For example:
+# Directory into which zip archives of plugins are downloaded from the Moodle
+# Plugins Directory.
+#
+# The presence of a zip archive in this directory determines whether a specific
+# plugin version will be redownloaded, extracted and installed.
+moodle_plugin_archives: "{{ ansible_env.HOME }}/moodle_plugin_archives"
+
+# Download and install plugins from the Moodle Plugins Directory
+# (https://moodle.org/plugins). For each plugin, specify its name and the URL
+# to the zip archive containing a version compatible with the Moodle version.
+# For example:
+#
+# moodle_plugins:
+#   - name: availability_xp
+#     archive: "{{
+#       'https://moodle.org/plugins/'
+#       'download.php/30440/availability_xp_moodle44_2023110700.zip' }}"
+#   - name: mod_customcert
+#     archive: "{{
+#       'https://moodle.org/plugins/'
+#       'download.php/32229/mod_customcert_moodle43_2023100901.zip' }}"
+moodle_plugins: []
+
+# Download plugins from a public Git repository. For example:
 #
 # moodle_plugins_git;
 #   - name: block_todos
