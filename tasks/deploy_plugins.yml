@@ -16,12 +16,51 @@
 # <https://www.gnu.org/licenses/>.
 
 ##
-# Clone source code of plugins from remote Git repository hosts like GitHub.
+# Install plugins from Moodle plugins directory and source code repositories.
 #
 # @copyright  2023 Geoffrey Bernardo van Wyk (https://geoffreyvanwyk.dev)
 ##
 
-- name: Deploy source code of plugins
+- name: Install package for extracting zip archives
+  become: true
+  ansible.builtin.apt:
+    package: unzip
+
+- name: Create directory for storing plugin zip archives
+  ansible.builtin.file:
+    path: "{{ moodle_plugin_archives }}"
+    state: directory
+    mode: u=rwX,go=rX
+
+- name: Download plugin zip archives
+  loop: "{{ moodle_plugins }}"
+  ansible.builtin.uri:
+    url: "{{ item.archive }}"
+    dest: "{{ moodle_plugin_archives }}"
+    mode: u=rw,go=r
+  register: moodle_download_plugin_zip_archives
+
+- name: Extract plugins # noqa no-handler
+  # There is no easy way at the moment to determine which version of the plugin
+  # is installed. The output of admin/cli/uninstall_plugins.php --show-contrib
+  # should include that information.
+  when: moodle_download_plugin_zip_archives.changed
+  loop: "{{ moodle_plugins }}"
+  ansible.builtin.unarchive:
+    src: "{{
+      moodle_plugin_archives + '/' +
+      (item.archive | regex_search(item.name + '.+\\.zip$'))
+      }}"
+    remote_src: true
+    dest: "{{
+      moodle_deploy_destination + '/' +
+      lookup('geoffreyvanwyk.moodle.plugin_directory',
+      frankenstyle_name=item.name)
+      | dirname
+      }}"
+  notify: Upgrade Moodle
+
+- name: Clone source code of plugins
   loop: "{{ moodle_plugins_git }}"
   ansible.builtin.git:
     repo: "{{ item.repository }}"

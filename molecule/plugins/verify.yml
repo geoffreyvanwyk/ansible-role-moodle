@@ -46,7 +46,12 @@
       register: moodle_additional_plugins_installed
       changed_when: false
 
-    - name: Assert that plugins are installed
+    - name: Assert that plugins are installed from Git repositories
       loop: "{{ moodle_plugins_git }}"
+      ansible.builtin.assert:
+        that: item.name in moodle_additional_plugins_installed.stdout_lines
+
+    - name: Assert that plugins are installed from Moodle plugins directory
+      loop: "{{ moodle_plugins }}"
       ansible.builtin.assert:
         that: item.name in moodle_additional_plugins_installed.stdout_lines
