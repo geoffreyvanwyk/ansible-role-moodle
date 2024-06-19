@@ -34,7 +34,7 @@
 
 - name: Download plugin zip archives
   loop: "{{ moodle_plugins }}"
-  ansible.builtin.uri:
+  ansible.builtin.get_url:
     url: "{{ item.archive }}"
     dest: "{{ moodle_plugin_archives }}"
     mode: u=rw,go=r

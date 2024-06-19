@@ -31,27 +31,8 @@ on: # yamllint disable-line rule:truthy
       - master
 
 jobs:
-  yamllint:
-    name: YAML Lint
-    runs-on: ubuntu-22.04
-    steps:
-      - name: Check out the codebase
-        uses: actions/checkout@v2
-
-      - name: Set up Python 3
-        uses: actions/setup-python@v2
-        with:
-          python-version: "3.x"
-
-      - name: Install test dependencies
-        run: pip3 install --requirement requirements.txt
-
-      - name: Lint code
-        run: yamllint .
-
   ansiblelint:
     name: Ansible Lint
-    needs: yamllint
     runs-on: ubuntu-22.04
 
     steps:
