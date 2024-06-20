@@ -101,3 +101,10 @@
         value: 1
   tags:
     - molecule-idempotence-notest # Module mysql cannot be idempotently enabled.
+
+- name: Start PHP service
+  become: true
+  ansible.builtin.sysvinit:
+    name: php{{ php_version }}-fpm
+    state: started
+    enabled: true
