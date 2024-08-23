@@ -61,6 +61,7 @@ jobs:
           - config_settings
           - mariadb
           - plugins
+          - virtualhost
         ubuntu-version:
           - ubuntu2004
           - ubuntu2204

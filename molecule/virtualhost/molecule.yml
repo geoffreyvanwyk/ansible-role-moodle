@@ -16,17 +16,29 @@
 # <https://www.gnu.org/licenses/>.
 
 ##
-# List of roles on which this role depends.
+#  The central configuration entrypoint for Molecule.
 #
-# @copyright  2023 Geoffrey Bernardo van Wyk (https://geoffreyvanwyk.dev)
+# @copyright  2024 Geoffrey Bernardo van Wyk {@link https://geoffreyvanwyk.dev}
+# @link       http://tinyurl.com/molecule-scenario-layout
 ##
 
-roles:
-  - name: geoffreyvanwyk.php
-    version: v1.1.0
-  - name: geerlingguy.certbot
-    version: 5.2.0
-
-collections:
-  - name: geoffreyvanwyk.moodle
-    version: 1.2.0
+dependency:
+  name: galaxy
+driver:
+  name: docker
+platforms:
+  - name: ansible_role_moodle_molecule_${MOLECULE_DISTRO:-ubuntu2204}
+    image: "geoffreyvanwyk/docker-${MOLECULE_DISTRO:-ubuntu2204}-ansible:latest"
+    pre_build_image: true
+    published_ports:
+      - "0.0.0.0:80:80"
+      - "0.0.0.0:443:443"
+provisioner:
+  name: ansible
+  inventory:
+    host_vars:
+      ansible_role_moodle_molecule_${MOLECULE_DISTRO:-ubuntu2204}:
+        ansible_user: ubuntu
+        moodle_version: ${MOLECULE_MOODLE_VERSION:-4.4}
+verifier:
+  name: ansible

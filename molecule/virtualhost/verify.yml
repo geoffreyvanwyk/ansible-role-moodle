@@ -16,17 +16,16 @@
 # <https://www.gnu.org/licenses/>.
 
 ##
-# List of roles on which this role depends.
+# Contains specific tests against the state of the container after the role has
+# finished executing.
 #
-# @copyright  2023 Geoffrey Bernardo van Wyk (https://geoffreyvanwyk.dev)
+# @copyright  2024 Geoffrey Bernardo van Wyk {@link https://geoffreyvanwyk.dev}
 ##
 
-roles:
-  - name: geoffreyvanwyk.php
-    version: v1.1.0
-  - name: geerlingguy.certbot
-    version: 5.2.0
-
-collections:
-  - name: geoffreyvanwyk.moodle
-    version: 1.2.0
+- name: Verify
+  hosts: all
+  gather_facts: false
+  tasks:
+    - name: Example assertion
+      ansible.builtin.assert:
+        that: true

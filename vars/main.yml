@@ -47,13 +47,12 @@ moodle_deploy_version: "{{
 moodle_web_service: apache2
 
 # Subdirectory path relative to the document root of the web service virtual
-# host, without leading or trailing slashes.
+# host, without a trailing slash.
 #
 # It must not include any spaces anywhere.
 moodle_web_path: "{{
   moodle_deploy_destination
   | replace(moodle_web_documentroot, '')
-  | replace('/', '', count=1)
   }}"
 
 # Uniquely identifies a Moodle instance.
@@ -143,7 +142,7 @@ moodle_cfg_wwwroot: "{{
   moodle_web_protocol
   }}://{{
   moodle_web_domain
-  }}/{{
+  }}{{
   moodle_web_path
   }}"
 

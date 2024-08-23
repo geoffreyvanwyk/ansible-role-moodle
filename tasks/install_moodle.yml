@@ -26,9 +26,9 @@
   ansible.builtin.file:
     path: "{{ moodle_cfg_dataroot }}"
     state: directory
-    owner: "{{ ansible_user }}"
+    owner: www-data
     group: www-data
-    mode: "{{ moodle_cfg_directorypermissions }}"
+    mode: ugo=rwX
 
 - name: Create Moodle's configuration script
   ansible.builtin.template:

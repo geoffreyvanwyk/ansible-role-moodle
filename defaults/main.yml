@@ -25,6 +25,9 @@
 
 # ------ Basic {{{1
 
+# Served to users (production) or being developed (development)?
+moodle_env: production # or development
+
 # Human-readable format of the Moodle version to be installed.
 moodle_version: "4.3"
 
@@ -47,15 +50,25 @@ moodle_deploy_update: true
 
 # ------ Web Hosting {{{1
 
-# Whether Moodle is served over 'https' or just 'http'.
-moodle_web_protocol: http
-
 # Domain name of the web service virtual host.
 moodle_web_domain: 127.0.0.1
 
 # File system path to the document root of the web service virtual host,
 # without the trailing slash.
 moodle_web_documentroot: /var/www/html
+
+# Whether Moodle is served over 'https' or just 'http'.
+moodle_web_protocol: http
+
+# If Moodle is served over 'https', should a TLS certificate be installed with
+# Let's Encrypt (https://letsencrypt.org)?
+moodle_web_letsencrypt: true
+
+# File-system path to the TLS certificate file.
+moodle_web_certificatefile: /etc/letsencrypt/live/{{ moodle_web_domain }}/fullchain.pem
+
+# File-system path to the TLS certificate key file.
+moodle_web_certificatekeyfile: /etc/letsencrypt/live/{{ moodle_web_domain }}/privkey.pem
 
 # ------ Set-Up of Database {{{1
 
