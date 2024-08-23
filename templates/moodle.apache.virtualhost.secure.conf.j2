@@ -1,0 +1,15 @@
+<VirtualHost *:443>
+  ServerName {{ moodle_web_domain }}
+  DocumentRoot {{ moodle_web_documentroot }}
+
+  {% include 'moodle.apache.conf.j2' %}
+
+  <IfModule mod_ssl.c>
+    SSLEngine On
+    SSLCertificateFile {{ moodle_web_certificatefile }}
+    SSLCertificateKeyFile {{ moodle_web_certificatekeyfile }}
+  </IfModule>
+
+  ErrorLog ${APACHE_LOG_DIR}/{{ moodle_web_domain }}-error.log
+  CustomLog ${APACHE_LOG_DIR}/access.log combined
+</VirtualHost>

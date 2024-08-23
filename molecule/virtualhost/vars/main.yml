@@ -16,17 +16,15 @@
 # <https://www.gnu.org/licenses/>.
 
 ##
-# List of roles on which this role depends.
+# Override variables for this Molecule scenario.
 #
 # @copyright  2023 Geoffrey Bernardo van Wyk (https://geoffreyvanwyk.dev)
 ##
 
-roles:
-  - name: geoffreyvanwyk.php
-    version: v1.1.0
-  - name: geerlingguy.certbot
-    version: 5.2.0
+moodle_env: development
 
-collections:
-  - name: geoffreyvanwyk.moodle
-    version: 1.2.0
+moodle_deploy_destination: /var/www/{{ moodle_web_domain }}
+
+moodle_web_domain: moodle.molecule.test
+moodle_web_documentroot: "{{ moodle_deploy_destination }}"
+moodle_web_protocol: https

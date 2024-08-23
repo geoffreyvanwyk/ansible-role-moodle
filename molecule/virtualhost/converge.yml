@@ -16,17 +16,27 @@
 # <https://www.gnu.org/licenses/>.
 
 ##
-# List of roles on which this role depends.
+# Contains the call to the role when testing with Molecule.
 #
-# @copyright  2023 Geoffrey Bernardo van Wyk (https://geoffreyvanwyk.dev)
+# @copyright  2024 Geoffrey Bernardo van Wyk {@link https://geoffreyvanwyk.dev}
 ##
 
-roles:
-  - name: geoffreyvanwyk.php
-    version: v1.1.0
-  - name: geerlingguy.certbot
-    version: 5.2.0
+- name: Converge
+  hosts: all
 
-collections:
-  - name: geoffreyvanwyk.moodle
-    version: 1.2.0
+  vars_files:
+    - ./vars/main.yml
+
+  tasks:
+    - name: Update APT package cache
+      # Sometimes the package list on the server does not contain all the
+      # available packages. A fresh list has to be downloaded from the Ubuntu
+      # package repositories.
+      become: true
+      ansible.builtin.apt:
+        update_cache: true
+        cache_valid_time: "{{ 60 * 60 * 24 }}" # seconds => 24 hours
+
+    - name: "Include geoffreyvanwyk.moodle"
+      ansible.builtin.include_role:
+        name: "geoffreyvanwyk.moodle"

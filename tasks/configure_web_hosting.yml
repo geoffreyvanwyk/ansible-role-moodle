@@ -27,32 +27,135 @@
     package: "{{ moodle_web_service }}"
 
 - name: Enable Apache modules
-  when: moodle_web_service == 'apache2'
   become: true
   loop:
-    - rewrite
-    - proxy
-    - proxy_fcgi
+    - rewrite # Used for redirecting requests and .htaccess.
+    - proxy # Used for PHP FPM.
+    - proxy_fcgi # Used for PHP FPM.
+    - ssl # Used for secure connections with TLS certificates (HTTPS).
   community.general.apache2_module:
     name: "{{ item }}"
     state: present
   notify: Restart Apache web service
 
-- name: Serve Moodle from subdirectory
-  when: moodle_web_root == 'subdirectory'
-  become: true
+- name: Configure Apache
+  when: moodle_web_service == 'apache2'
   block:
-    - name: Make available Apache configuration for Moodle
-      ansible.builtin.template:
-        src: moodle.apache.conf.j2
-        dest: /etc/apache2/conf-available/moodle_{{ moodle_instance }}.conf
-        mode: u=rw,g=r,o=r
-      notify: Restart Apache web service
+    - name: Serve Moodle from subdirectory
+      when: moodle_web_root == 'subdirectory'
+      block:
+        - name: Make available Apache configuration for Moodle
+          become: true
+          ansible.builtin.template:
+            src: moodle.apache.conf.j2
+            dest: /etc/apache2/conf-available/moodle_{{ moodle_instance }}.conf
+            mode: u=rw,g=r,o=r
 
-    - name: Enable Apache configuration for Moodle
-      ansible.builtin.file:
-        path: /etc/apache2/conf-enabled/moodle_{{ moodle_instance }}.conf
-        src: /etc/apache2/conf-available/moodle_{{ moodle_instance }}.conf
-        state: link
-        mode: u=rw,g=r,o=r
-      notify: Restart Apache web service
+        - name: Enable Apache configuration for Moodle
+          become: true
+          ansible.builtin.file:
+            state: link
+            src: /etc/apache2/conf-available/moodle_{{ moodle_instance }}.conf
+            path: /etc/apache2/conf-enabled/moodle_{{ moodle_instance }}.conf
+            mode: u=rw,g=r,o=r
+          notify: Restart Apache web service
+
+    - name: Serve Moodle from virtual host
+      when: moodle_web_root == 'virtualhost'
+      block:
+        - name: Insecure Apache virtualhost
+          become: true
+          block:
+            - name: Install insecure Apache virtualhost configuration for Moodle
+              ansible.builtin.template:
+                src: moodle.apache.virtualhost.insecure.conf.j2
+                dest: /etc/apache2/sites-available/{{ moodle_web_domain }}.conf
+                mode: u=rw,g=r,o=r
+
+            - name: Enable insecure Apache virtualhost configuration for Moodle
+              ansible.builtin.file:
+                state: link
+                src: /etc/apache2/sites-available/{{ moodle_web_domain }}.conf
+                path: /etc/apache2/sites-enabled/{{ moodle_web_domain }}.conf
+                mode: u=rw,g=r,o=r
+              notify: Restart Apache web service
+
+        - name: Secure Apache virtualhost
+          when: moodle_web_protocol == 'https'
+          block:
+            - name: Install TLS certificates
+              when: moodle_web_letsencrypt and moodle_env == 'production'
+              ansible.builtin.include_role:
+                name: geerlingguy.certbot
+                apply:
+                  become: true
+              vars:
+                certbot_create_if_missing: true
+                certbot_admin_email: "{{ moodle_admin_email }}"
+                certbot_create_standalone_stop_services:
+                  - apache2
+                certbot_certs:
+                  - domains:
+                      - "{{ moodle_web_domain }}"
+
+            - name: Install TLS certificate in development
+              when: moodle_env == 'development'
+              block:
+                - name: Install prequisite Python libraries for self-signed certificates
+                  ansible.builtin.pip:
+                    name:
+                      - cryptography
+
+                - name: Create SSL directories
+                  become: true
+                  loop:
+                    - /etc/ssl/crt/
+                    - /etc/ssl/private/
+                    - /etc/ssl/csr
+                  ansible.builtin.file:
+                    path: "{{ item }}"
+                    state: directory
+                    owner: root
+                    group: root
+                    mode: u=rwx,g=rx,o=rx
+
+                - name: Generate an OpenSSL private key
+                  become: true
+                  community.crypto.openssl_privatekey:
+                    path: /etc/ssl/private/{{ moodle_web_domain }}.pem
+
+                - name: Generate an OpenSSL Certificate Signing Request
+                  become: true
+                  community.crypto.openssl_csr:
+                    path: /etc/ssl/csr/{{ moodle_web_domain }}.csr
+                    privatekey_path: /etc/ssl/private/{{ moodle_web_domain }}.pem
+                    common_name: "{{ moodle_web_domain }}"
+
+                - name: Install self-signed TLS certificates
+                  become: true
+                  community.crypto.x509_certificate:
+                    path: /etc/ssl/crt/{{ moodle_web_domain }}.crt
+                    privatekey_path: /etc/ssl/private/{{ moodle_web_domain }}.pem
+                    csr_path: /etc/ssl/csr/{{ moodle_web_domain }}.csr
+                    provider: selfsigned
+
+                - name: Set path to TLS certificate files
+                  ansible.builtin.set_fact:
+                    moodle_web_certificatefile: /etc/ssl/crt/{{ moodle_web_domain }}.crt
+                    moodle_web_certificatekeyfile: /etc/ssl/private/{{ moodle_web_domain }}.pem
+
+            - name: Install secure Apache virtualhost configuration for Moodle
+              become: true
+              ansible.builtin.template:
+                src: moodle.apache.virtualhost.secure.conf.j2
+                dest: /etc/apache2/sites-available/{{ moodle_web_domain }}-ssl.conf
+                mode: u=rw,g=r,o=r
+
+            - name: Enable secure Apache virtualhost configuration for Moodle
+              become: true
+              ansible.builtin.file:
+                state: link
+                src: /etc/apache2/sites-available/{{ moodle_web_domain }}-ssl.conf
+                path: /etc/apache2/sites-enabled/{{ moodle_web_domain }}-ssl.conf
+                mode: u=rw,g=r,o=r
+              notify: Restart Apache web service
