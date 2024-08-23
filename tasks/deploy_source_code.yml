@@ -30,28 +30,6 @@
       - acl # Access control lists
     state: present
 
-- name: Help Git overcome unstable Internet connection
-  block:
-    - name: Increase Git HTTP buffer
-      # Attempt to solve:
-      # RPC failed; curl 92 HTTP/2 stream 0 was not closed cleanly:
-      # CANCEL (err 8)
-      community.general.git_config:
-        scope: global
-        name: http.postBuffer
-        value: 2147483648
-
-    - name: Disable Git compression
-      # Attempt to solve:
-      # error: <so-many> bytes of body are still expected
-      # fetch-pack: unexpected disconnect while reading sideband packet
-      # fatal: early EOF
-      # fatal: fetch-pack: invalid index-pack output
-      community.general.git_config:
-        scope: global
-        name: core.compression
-        value: 0
-
 - name: Obtain status of parent of deployment destination
   become: true
   ansible.builtin.stat:
