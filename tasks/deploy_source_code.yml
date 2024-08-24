@@ -30,7 +30,31 @@
       - acl # Access control lists
     state: present
 
+- name: Help Git overcome unstable Internet connection
+  block:
+    - name: Use HTTP version 1 for Git
+      # Attempt to solve these errors:
+      #   error: RPC failed; curl 92 HTTP/2 stream 0 was not closed cleanly: CANCEL (err 8)
+      #   error: 1114 bytes of body are still expected
+      #   fetch-pack: unexpected disconnect while reading sideband packet
+      #   fatal: early EOF
+      #   fatal: fetch-pack: invalid index-pack output"
+      community.general.git_config:
+        scope: global
+        name: http.version
+        value: HTTP/1.1
 
+    - name: Disable Git compression
+      # Attempt to solve these errors:
+      #   error: RPC failed; curl 56 GnuTLS recv error (-9): Error decoding the received TLS packet.
+      #   error: <so-many> bytes of body are still expected
+      #   fetch-pack: unexpected disconnect while reading sideband packet
+      #   fatal: early EOF
+      #   fatal: fetch-pack: invalid index-pack output
+      community.general.git_config:
+        scope: global
+        name: core.compression
+        value: 0
 
 - name: Ensure Ansible user has write access to parent of deployment destination
   # This ensures that the Ansible user can clone the repository into the
