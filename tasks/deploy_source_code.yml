@@ -81,7 +81,7 @@
   # of plugins that might get installed later via the web interface.
   become: true
   ansible.posix.acl:
-    path: "{{ moodle_deploy_destination | dirname }}"
+    path: "{{ moodle_deploy_destination }}"
     etype: user
     entity: "{{ ansible_user }}"
     permissions: rwX
