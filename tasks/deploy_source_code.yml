@@ -19,7 +19,7 @@
 # Deploy the Moodle and plugins source code from a remote source code
 # repository host like GitHub.
 #
-# @copyright  2023 Geoffrey Bernardo van Wyk (https://geoffreyvanwyk.dev)
+# @copyright  2024 Geoffrey Bernardo van Wyk {@link https://geoffreyvanwyk.dev}
 ##
 
 - name: Ensure necessary packages are available
@@ -30,21 +30,7 @@
       - acl # Access control lists
     state: present
 
-- name: Obtain status of parent of deployment destination
-  become: true
-  ansible.builtin.stat:
-    path: "{{ moodle_deploy_destination | dirname }}"
-  register: moodle_stat_deploy_destination_parent
 
-- name: Create parent of deployment destination
-  when: not moodle_stat_deploy_destination_parent.stat.exists
-  become: true
-  ansible.builtin.file:
-    path: "{{ moodle_deploy_destination | dirname }}"
-    state: directory
-    owner: "{{ ansible_user }}"
-    group: "{{ ansible_user }}"
-    mode: u=rwx,g=rx,o=rx
 
 - name: Ensure Ansible user has write access to parent of deployment destination
   # This ensures that the Ansible user can clone the repository into the

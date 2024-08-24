@@ -16,29 +16,25 @@
 # <https://www.gnu.org/licenses/>.
 
 ##
-# Entry point for all tasks performed by the role.
+# Install a web service.
 #
-# @copyright  2023 Geoffrey Bernardo van Wyk (https://geoffreyvanwyk.dev)
+# @copyright  2024 Geoffrey Bernardo van Wyk {@link https://geoffreyvanwyk.dev}
 ##
 
-- name: Install PHP
-  ansible.builtin.import_tasks: ./install_php.yml
-
-- name: Install database service
-  when: moodle_db_install
-  ansible.builtin.import_tasks: ./install_database_service.yml
-
 - name: Install web service
-  ansible.builtin.import_tasks: ./install_web_service.yml
+  become: true
+  ansible.builtin.apt:
+    package: "{{ moodle_web_service }}"
 
-- name: Deploy Moodle
-  ansible.builtin.import_tasks: ./deploy_source_code.yml
-
-- name: Deploy plugins
-  ansible.builtin.import_tasks: ./deploy_plugins.yml
-
-- name: Install and configure web hosting
-  ansible.builtin.import_tasks: ./configure_web_hosting.yml
-
-- name: Install Moodle and configure server-side
-  ansible.builtin.import_tasks: ./install_moodle.yml
+- name: Enable Apache modules
+  when: moodle_web_service == 'apache2'
+  become: true
+  loop:
+    - rewrite # Used for redirecting requests and .htaccess.
+    - proxy # Used for PHP FPM.
+    - proxy_fcgi # Used for PHP FPM.
+    - ssl # Used for secure connections with TLS certificates (HTTPS).
+  community.general.apache2_module:
+    name: "{{ item }}"
+    state: present
+  notify: Restart Apache web service

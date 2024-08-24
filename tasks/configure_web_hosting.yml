@@ -16,27 +16,10 @@
 # <https://www.gnu.org/licenses/>.
 
 ##
-# Install a web service and configure it.
+# Configure hosting of the Moodle instance by the web service.
 #
-# @copyright  2023 Geoffrey Bernardo van Wyk (https://geoffreyvanwyk.dev)
+# @copyright  2024 Geoffrey Bernardo van Wyk {@link https://geoffreyvanwyk.dev}
 ##
-
-- name: Install web service
-  become: true
-  ansible.builtin.apt:
-    package: "{{ moodle_web_service }}"
-
-- name: Enable Apache modules
-  become: true
-  loop:
-    - rewrite # Used for redirecting requests and .htaccess.
-    - proxy # Used for PHP FPM.
-    - proxy_fcgi # Used for PHP FPM.
-    - ssl # Used for secure connections with TLS certificates (HTTPS).
-  community.general.apache2_module:
-    name: "{{ item }}"
-    state: present
-  notify: Restart Apache web service
 
 - name: Configure Apache
   when: moodle_web_service == 'apache2'
