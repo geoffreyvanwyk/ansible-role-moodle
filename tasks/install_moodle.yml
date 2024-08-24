@@ -97,3 +97,27 @@
       /tmp/cron-{{ moodle_instance }}.log
     minute: "*"
   notify: Restart cron service
+
+- name: Give write access to web server to Moodle data directory
+  become: true
+  ansible.posix.acl:
+    path: "{{ moodle_cfg_dataroot }}"
+    etype: user
+    entity: www-data
+    permissions: rwX
+    recursive: true
+    state: present
+  tags:
+    # Because it is recursive, this task cannot be idempotent.
+    - molecule-idempotence-notest
+
+- name: Give write access to web server to new directories in Moodle data directory
+  become: true
+  ansible.posix.acl:
+    path: "{{ moodle_cfg_dataroot }}"
+    etype: user
+    entity: www-data
+    permissions: rwX
+    recursive: true
+    default: true # Means that it applies to new files and directories.
+    state: present
