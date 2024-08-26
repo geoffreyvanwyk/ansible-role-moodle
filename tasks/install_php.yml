@@ -71,6 +71,7 @@
       - mysql
       - pgsql
       - soap
+      - tidy
       - tokenizer
       - xml
       - xmlreader
