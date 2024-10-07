@@ -78,6 +78,9 @@ moodle_db_install: true
 # Which database service to use: PostgreSQL (pgsql) or MariaDB (maridb).
 moodle_db_type: pgsql
 
+# The name of the database.
+moodle_db_name: ""
+
 # If a database service has to be installed, this user will be created with
 # administrative provileges on the database. If the database service is already
 # running on a different server, the user must supply the username and
