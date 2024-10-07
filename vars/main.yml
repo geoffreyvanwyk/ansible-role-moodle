@@ -124,16 +124,11 @@ moodle_web_protected_files:
   - README\.md
   - upgrade\.txt
 
-# ------ Set-Up of Database {{{1
-
-# The name of the database.
-moodle_db_name: "{{ 'moodle' + moodle_instance }}"
-
 # ------ Install & Server-side Configuration {{{1
 
 # Database connection details.
 moodle_cfg_dbtype: "{{ moodle_db_type }}"
-moodle_cfg_dbname: "{{ moodle_db_name }}"
+moodle_cfg_dbname: "{{ moodle_db_name | default('moodle-' + moodle_instance, true) }}"
 moodle_cfg_dbuser: "{{ moodle_db_username }}"
 moodle_cfg_dbpass: "{{ moodle_db_password }}"
 
